@@ -1,0 +1,34 @@
+modular-cpp-framework provides CMake targets:
+
+    find_package(modular-cpp-framework CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE mcf::core)
+
+The package provides the following components:
+
+    mcf::core       - Header-only core framework (EventBus, ServiceLocator, PluginManager, etc.)
+    mcf::logger     - Logger module with JSON configuration (if logger feature enabled)
+    mcf::networking - TCP networking module (if networking feature enabled)
+    mcf::profiling  - Performance profiling module (if profiling feature enabled)
+    mcf::realtime   - Fixed timestep realtime module (if realtime feature enabled)
+
+Example usage:
+
+    #include <mcf/core/Application.hpp>
+    #include <mcf/modules/logger/LoggerModule.hpp>
+
+    class MyApp : public mcf::Application {
+    protected:
+        bool onInitialize() override {
+            // Initialize your application
+            return true;
+        }
+    };
+
+    int main() {
+        MyApp app;
+        app.addModule<mcf::LoggerModule>();
+        return app.run();
+    }
+
+For more information, see the documentation at:
+https://github.com/Sylvain-RZ/ModularCppFramework

@@ -1,0 +1,150 @@
+MODULAR CPP FRAMEWORK COMMERCIAL LICENSE AGREEMENT
+
+This Commercial License Agreement ("Agreement") is entered into between:
+
+Licensor: Sylvain RZ
+Address: Toulouse, France
+Email: Sylvain-RZ@abclic.org
+
+And the Licensee who has purchased a commercial license for ModularCppFramework.
+
+1. GRANT OF LICENSE
+
+Subject to the terms and conditions of this Agreement, Licensor grants to Licensee
+a non-exclusive, non-transferable, perpetual (unless terminated as provided herein)
+license to use, modify, and distribute ModularCppFramework in accordance with the
+license tier purchased:
+
+   1.1 Single Developer License
+       - One (1) developer may use the software
+       - Unlimited projects
+       - May deploy in commercial products
+       - No source code redistribution rights
+
+   1.2 Team License
+       - Up to 10 developers may use the software
+       - Unlimited projects within the organization
+       - May deploy in commercial products
+       - No source code redistribution rights
+
+   1.3 Enterprise License
+       - Unlimited developers within the organization
+       - Unlimited projects
+       - May deploy in commercial products
+       - Limited source code redistribution to customers/partners
+       - Priority support included
+
+2. SCOPE OF LICENSE
+
+   2.1 Permitted Uses:
+       - Use the software to develop commercial applications
+       - Modify the software for internal use
+       - Distribute compiled binaries containing the software
+       - Create derivative works for commercial purposes
+
+   2.2 Restrictions:
+       - No sublicensing of the framework itself
+       - No distribution of source code except as explicitly permitted
+       - No removal of copyright notices or license information
+       - No use in products that compete directly with ModularCppFramework
+
+3. INTELLECTUAL PROPERTY
+
+All rights, title, and interest in and to ModularCppFramework, including all
+intellectual property rights therein, remain with Licensor. This Agreement does
+not grant Licensee any ownership rights in ModularCppFramework.
+
+4. WARRANTY DISCLAIMER
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL LICENSOR BE LIABLE FOR
+ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+5. LIMITATION OF LIABILITY
+
+IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE.
+
+6. SUPPORT AND UPDATES
+
+   6.1 Licensor will provide:
+       - Bug fixes and security patches for 1 year
+       - Email support (response time varies by license tier)
+       - Access to updates and new versions released during 1 year
+
+   6.2 Support does not include:
+       - Custom development or feature implementation
+       - Integration with third-party software
+       - Training or consulting services (available separately)
+
+7. TERM AND TERMINATION
+
+   7.1 This Agreement is effective upon purchase and continues perpetually unless
+       terminated.
+
+   7.2 Licensor may terminate this Agreement if Licensee:
+       - Breaches any term of this Agreement
+       - Fails to pay license fees
+       - Uses the software in violation of applicable laws
+
+   7.3 Upon termination:
+       - Licensee must cease all use of the software
+       - Already deployed applications may continue to run
+       - No refunds will be provided
+
+8. CONFIDENTIALITY
+
+Licensee agrees to keep confidential any non-public aspects of ModularCppFramework,
+including but not limited to source code, documentation, and implementation details
+not publicly disclosed.
+
+9. COMPLIANCE AND AUDIT
+
+Licensor reserves the right to audit Licensee's use of ModularCppFramework to
+ensure compliance with this Agreement. Licensee agrees to cooperate with such
+audits and provide necessary documentation.
+
+10. GOVERNING LAW
+
+This Agreement shall be governed by and construed in accordance with the laws of
+France, without regard to its conflict of law provisions.
+
+11. ENTIRE AGREEMENT
+
+This Agreement constitutes the entire agreement between the parties concerning
+ModularCppFramework and supersedes all prior agreements and understandings.
+
+12. CONTACT INFORMATION
+
+For questions about this license or to purchase a commercial license:
+Email: Sylvain-RZ@abclic.org
+Website: Not available yet
+Phone: Contact before by email
+
+---
+
+LICENSE FEES AND TIERS:
+
+Single Developer License: $160 per year
+Team License (10 developers): $1200 per year
+Enterprise License: $6800 per year (or contact for custom pricing)
+
+All prices are in euros and subject to applicable taxes.
+
+---
+
+By using ModularCppFramework under this commercial license, you acknowledge that
+you have read, understood, and agree to be bound by the terms of this Agreement.
+
+License Purchase Date: _______________
+License Number: _______________
+Licensee Name: _______________
+Licensee Signature: _______________
+
+For Licensor:
+Authorized Signature: _______________
+Date: _______________

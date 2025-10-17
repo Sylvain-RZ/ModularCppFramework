@@ -1,0 +1,152 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} - ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-20.04, windows-latest, macos-latest]
+        build_type: [Debug, Release]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up build environment (Ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build
+
+    - name: Set up build environment (macOS)
+      if: startsWith(matrix.os, 'macos')
+      run: |
+        brew install cmake ninja
+
+    - name: Configure CMake
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -G Ninja
+
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.build_type }} --parallel
+
+    - name: Run tests
+      run: |
+        cd build
+        ctest --output-on-failure --build-config ${{ matrix.build_type }} -C ${{ matrix.build_type }}
+
+    - name: Upload test results on failure
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.os }}-${{ matrix.build_type }}
+        path: |
+          build/Testing/Temporary/LastTest.log
+          build/bin/tests/
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Check for TODO/FIXME comments
+      run: |
+        echo "Scanning for TODO/FIXME comments..."
+        TODO_COUNT=$(grep -r "TODO" --include="*.hpp" --include="*.cpp" --exclude-dir=external --exclude-dir=build . | wc -l)
+        FIXME_COUNT=$(grep -r "FIXME" --include="*.hpp" --include="*.cpp" --exclude-dir=external --exclude-dir=build . | wc -l)
+        echo "Found $TODO_COUNT TODO comments"
+        echo "Found $FIXME_COUNT FIXME comments"
+        if [ $FIXME_COUNT -gt 0 ]; then
+          echo "::warning::Found $FIXME_COUNT FIXME comments that should be addressed"
+          grep -rn "FIXME" --include="*.hpp" --include="*.cpp" --exclude-dir=external --exclude-dir=build .
+        fi
+
+    - name: Check file formatting (line endings)
+      run: |
+        echo "Checking for Windows line endings..."
+        if find . -path ./external -prune -o -path ./build -prune -o \( -name "*.hpp" -o -name "*.cpp" \) -exec file {} \; | grep CRLF; then
+          echo "::warning::Found files with Windows line endings (CRLF). Consider using LF line endings."
+        else
+          echo "All files use Unix line endings (LF)"
+        fi
+
+  build-documentation:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Doxygen
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y doxygen graphviz
+
+    - name: Check for Doxyfile
+      run: |
+        if [ -f Doxyfile ]; then
+          echo "Doxyfile found, generating documentation..."
+          doxygen Doxyfile
+        else
+          echo "::warning::No Doxyfile found. Documentation generation skipped."
+        fi
+
+    - name: Upload documentation
+      if: success() && hashFiles('Doxyfile') != ''
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: docs/html/
+        retention-days: 30
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build lcov
+
+    - name: Configure with coverage flags
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DCMAKE_CXX_FLAGS="--coverage" -G Ninja
+
+    - name: Build
+      run: |
+        cmake --build build --parallel
+
+    - name: Run tests
+      run: |
+        cd build
+        ctest --output-on-failure
+
+    - name: Generate coverage report
+      run: |
+        lcov --directory build --capture --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' '*/external/*' '*/tests/*' --output-file coverage.info
+        lcov --list coverage.info
+
+    - name: Upload coverage to artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: coverage.info

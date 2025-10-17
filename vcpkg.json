@@ -1,0 +1,35 @@
+{
+  "name": "modular-cpp-framework",
+  "version-semver": "1.0.0",
+  "description": "Modern C++17 framework with dynamic plugin system, hot-reload, and modular architecture",
+  "homepage": "https://github.com/Sylvain-RZ/ModularCppFramework",
+  "license": "MIT",
+  "supports": "!(uwp | arm)",
+  "dependencies": [],
+  "features": {
+    "logger": {
+      "description": "Build Logger module with JSON configuration support"
+    },
+    "networking": {
+      "description": "Build Networking module with TCP client/server"
+    },
+    "profiling": {
+      "description": "Build Profiling module with performance metrics"
+    },
+    "realtime": {
+      "description": "Build Realtime module with fixed timestep updates"
+    },
+    "examples": {
+      "description": "Build example applications"
+    },
+    "tests": {
+      "description": "Build test suite"
+    }
+  },
+  "default-features": [
+    "logger",
+    "networking",
+    "profiling",
+    "realtime"
+  ]
+}

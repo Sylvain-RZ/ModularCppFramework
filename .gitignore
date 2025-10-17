@@ -1,0 +1,123 @@
+# Build Output Directories
+build/
+cmake-build-*/
+out/
+dist/
+
+# CMake Generated Files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+!*/CMakeLists.txt
+
+# Compiled Object Files and Libraries
+*.o
+*.obj
+*.a
+*.ar
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.elf
+*.gch
+*.pch
+
+# Dependencies
+*.d
+*.dep
+*.depend
+
+# Hidden directories (ignore all directories starting with .)
+.*/
+
+# Exceptions for necessary directories
+!.github/
+!.gitignore
+!.clang-format
+
+# IDE and Editor Files (specific patterns for files)
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+*.orig
+*.rej
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# LSP and Editor Tools
+compile_commands.json
+
+# Test Output and CTest
+Testing/Temporary/
+test_output.*
+test_*.log
+*_test.log
+
+# Logger/Runtime Generated Files (Framework-Specific)
+logs/
+*.log
+*.log.*
+test_rotating.log*
+
+# Profiling and Metrics Output (Framework-Specific)
+metrics/
+metrics_*.json
+*.profdata
+*.profraw
+
+# Example Runtime Data (Framework-Specific)
+filesystem_example_data/
+*_example_data/
+
+# Coverage Reports
+*.gcov
+*.gcda
+*.gcno
+*.coverage
+coverage/
+gcov-report/
+
+# Doxygen Generated Documentation
+docs/html/
+docs/latex/
+doxygen_output/
+
+# Package Manager Directories
+node_modules/
+.conan/
+.conan2/
+conan_cache/
+vcpkg_installed/
+vcpkg-overlay-ports/
+test_conan_install/
+test_package/build/
+test_package/.conan/
+
+# MSVC Specific (Windows)
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.ipdb
+
+# Python Generated Files
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Local Configuration
+local_config.json
+.env
+.env.local

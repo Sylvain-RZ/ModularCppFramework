@@ -1,0 +1,123 @@
+cmake_minimum_required(VERSION 3.16)
+
+# ============================================
+# Catch2 Unit Tests
+# ============================================
+
+# EventBus Tests with Catch2
+add_executable(test_eventbus_catch2
+    unit/test_eventbus_catch2.cpp
+)
+target_link_libraries(test_eventbus_catch2 PRIVATE mvk_core Catch2)
+add_test(NAME Catch2_EventBus COMMAND test_eventbus_catch2)
+
+# ServiceLocator Tests with Catch2
+add_executable(test_service_locator_catch2
+    unit/test_service_locator_catch2.cpp
+)
+target_link_libraries(test_service_locator_catch2 PRIVATE mvk_core Catch2)
+add_test(NAME Catch2_ServiceLocator COMMAND test_service_locator_catch2)
+
+# ============================================
+# Legacy Tests (keep for now)
+# ============================================
+
+# EventBus Unit Tests (legacy)
+add_executable(test_eventbus
+    unit/test_eventbus.cpp
+)
+target_link_libraries(test_eventbus PRIVATE mvk_core)
+add_test(NAME UnitTest_EventBus COMMAND test_eventbus)
+
+# ServiceLocator Unit Tests (legacy)
+add_executable(test_service_locator
+    unit/test_service_locator.cpp
+)
+target_link_libraries(test_service_locator PRIVATE mvk_core)
+add_test(NAME UnitTest_ServiceLocator COMMAND test_service_locator)
+
+# ResourceManager Unit Tests (legacy)
+add_executable(test_resource_manager
+    unit/test_resource_manager.cpp
+)
+target_link_libraries(test_resource_manager PRIVATE mvk_core)
+add_test(NAME UnitTest_ResourceManager COMMAND test_resource_manager)
+
+# DependencyResolver Unit Tests (legacy)
+add_executable(test_dependency_resolver
+    unit/test_dependency_resolver.cpp
+)
+target_link_libraries(test_dependency_resolver PRIVATE mvk_core)
+add_test(NAME UnitTest_DependencyResolver COMMAND test_dependency_resolver)
+
+# FileWatcher Unit Tests (legacy)
+add_executable(test_file_watcher
+    unit/test_file_watcher.cpp
+)
+target_link_libraries(test_file_watcher PRIVATE mvk_core)
+add_test(NAME UnitTest_FileWatcher COMMAND test_file_watcher)
+
+# ============================================
+# Integration Tests
+# ============================================
+
+# Basic Integration Test
+add_executable(test_app
+    integration/test_app.cpp
+)
+target_link_libraries(test_app PRIVATE mvk_core)
+add_test(NAME IntegrationTest_Basic COMMAND test_app)
+
+# Hot Reload Integration Test
+add_executable(test_hot_reload
+    integration/test_hot_reload.cpp
+)
+target_link_libraries(test_hot_reload PRIVATE mvk_core)
+add_test(NAME IntegrationTest_HotReload COMMAND test_hot_reload)
+
+# ============================================
+# Test Output Configuration
+# ============================================
+
+# Set output directory for test executables
+set_target_properties(
+    test_eventbus_catch2
+    test_service_locator_catch2
+    test_eventbus
+    test_service_locator
+    test_resource_manager
+    test_dependency_resolver
+    test_file_watcher
+    test_app
+    test_hot_reload
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests
+)
+
+# ============================================
+# Test Tags and Filtering
+# ============================================
+
+# Add custom test target for Catch2 tests only
+add_custom_target(catch2_tests
+    COMMAND ${CMAKE_CTEST_COMMAND} -R Catch2
+    DEPENDS test_eventbus_catch2 test_service_locator_catch2
+    COMMENT "Running Catch2 tests..."
+)
+
+# Add custom target for benchmarks (Catch2)
+add_custom_target(benchmarks
+    COMMAND test_eventbus_catch2 "[.benchmark]"
+    COMMAND test_service_locator_catch2 "[.benchmark]"
+    DEPENDS test_eventbus_catch2 test_service_locator_catch2
+    COMMENT "Running benchmarks..."
+)
+
+# Add custom target for hot-reload specific tests
+add_custom_target(hot_reload_tests
+    COMMAND test_eventbus_catch2 "[hot-reload]"
+    COMMAND test_service_locator_catch2 "[hot-reload]"
+    COMMAND test_hot_reload
+    DEPENDS test_eventbus_catch2 test_service_locator_catch2 test_hot_reload
+    COMMENT "Running hot-reload tests..."
+)
