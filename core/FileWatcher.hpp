@@ -71,6 +71,7 @@ public:
      * @brief Start watching for file changes
      */
     void start() {
+        std::lock_guard<std::mutex> lock(m_mutex);
         if (m_running) {
             return;
         }
@@ -83,11 +84,16 @@ public:
      * @brief Stop watching for file changes
      */
     void stop() {
-        if (!m_running) {
-            return;
+        // Check and set running flag under lock
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            if (!m_running) {
+                return;
+            }
+            m_running = false;
         }
 
-        m_running = false;
+        // Join thread outside of lock to avoid deadlock
         if (m_watchThread.joinable()) {
             m_watchThread.join();
         }
