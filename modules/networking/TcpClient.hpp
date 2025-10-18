@@ -41,11 +41,11 @@ public:
     explicit TcpClient(const NetworkConfig& config = NetworkConfig());
     ~TcpClient() override;
 
-    // Disable copy, allow move
+    // Disable copy and move (contains std::atomic which is not moveable)
     TcpClient(const TcpClient&) = delete;
     TcpClient& operator=(const TcpClient&) = delete;
-    TcpClient(TcpClient&&) noexcept = default;
-    TcpClient& operator=(TcpClient&&) noexcept = default;
+    TcpClient(TcpClient&&) noexcept = delete;
+    TcpClient& operator=(TcpClient&&) noexcept = delete;
 
     // INetworkConnection interface
     bool connect(const std::string& address, uint16_t port) override;

@@ -42,6 +42,30 @@ public:
     };
 
     /**
+     * @brief Get platform-specific temporary directory
+     */
+    static std::string getTempDir() {
+        #ifdef _WIN32
+            char tempPath[MAX_PATH];
+            GetTempPathA(MAX_PATH, tempPath);
+            return std::string(tempPath);
+        #else
+            return "/tmp/";
+        #endif
+    }
+
+    /**
+     * @brief Get platform-specific Python executable name
+     */
+    static std::string getPythonExecutable() {
+        #ifdef _WIN32
+            return "python";  // Windows uses 'python'
+        #else
+            return "python3";  // Linux/macOS use 'python3'
+        #endif
+    }
+
+    /**
      * @brief Execute a command and capture its output
      * @param command Command to execute
      * @return Result structure with exit code and output
@@ -51,8 +75,9 @@ public:
         result.exitCode = -1;
 
         // Create temporary files for stdout and stderr
-        std::string outFile = "/tmp/mcf_test_out_" + std::to_string(getpid()) + ".txt";
-        std::string errFile = "/tmp/mcf_test_err_" + std::to_string(getpid()) + ".txt";
+        std::string tempDir = getTempDir();
+        std::string outFile = tempDir + "mcf_test_out_" + std::to_string(getpid()) + ".txt";
+        std::string errFile = tempDir + "mcf_test_err_" + std::to_string(getpid()) + ".txt";
 
         // Execute command with output redirection
         std::string fullCommand = command + " > " + outFile + " 2> " + errFile;
@@ -136,7 +161,8 @@ public:
         projectRoot = Path::dirname(projectRoot);  // project root
 
         toolsDir = Path::join(projectRoot, "tools");
-        testDir = "/tmp/mcf_tools_test_" + std::to_string(ScriptExecutor::getpid());
+        std::string tempDir = ScriptExecutor::getTempDir();
+        testDir = tempDir + "mcf_tools_test_" + std::to_string(ScriptExecutor::getpid());
     }
 
     void SetUp() {
@@ -191,7 +217,7 @@ TEST_CASE("create-plugin.py - Help option works", "[tools][create-plugin]") {
     std::string script = fixture.getScriptPath("create-plugin.py");
     REQUIRE(fixture.fs.exists(script));
 
-    auto result = ScriptExecutor::execute("python3 " + script + " --help");
+    auto result = ScriptExecutor::execute(ScriptExecutor::getPythonExecutable() + " " + script + " --help");
 
     REQUIRE(result.success());
     REQUIRE(result.output.find("usage:") != std::string::npos);
@@ -209,7 +235,7 @@ TEST_CASE("create-plugin.py - Basic plugin creation", "[tools][create-plugin]") 
     fixture.fs.createDirectory(fixture.getTestPath("plugins"));
 
     SECTION("Create basic plugin") {
-        std::string cmd = "python3 " + script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d 'Test plugin' -o " + fixture.testDir + "/plugins";
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d 'Test plugin' -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
@@ -230,7 +256,7 @@ TEST_CASE("create-plugin.py - Basic plugin creation", "[tools][create-plugin]") 
     }
 
     SECTION("Create realtime plugin") {
-        std::string cmd = "python3 " + script + " -n RealtimePlugin -r -o " + fixture.testDir + "/plugins";
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n RealtimePlugin -r -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -242,7 +268,7 @@ TEST_CASE("create-plugin.py - Basic plugin creation", "[tools][create-plugin]") 
     }
 
     SECTION("Create event-driven plugin") {
-        std::string cmd = "python3 " + script + " -n EventPlugin -e -o " + fixture.testDir + "/plugins";
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n EventPlugin -e -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -253,7 +279,7 @@ TEST_CASE("create-plugin.py - Basic plugin creation", "[tools][create-plugin]") 
     }
 
     SECTION("Create full-featured plugin") {
-        std::string cmd = "python3 " + script + " -n FullPlugin -r -e -o " + fixture.testDir + "/plugins";
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n FullPlugin -r -e -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -274,12 +300,12 @@ TEST_CASE("create-plugin.py - Error handling", "[tools][create-plugin]") {
     std::string script = fixture.getScriptPath("create-plugin.py");
 
     SECTION("Missing required argument") {
-        auto result = ScriptExecutor::execute("python3 " + script);
+        auto result = ScriptExecutor::execute(ScriptExecutor::getPythonExecutable() + " " + script);
         REQUIRE_FALSE(result.success());
     }
 
     SECTION("Invalid priority value") {
-        std::string cmd = "python3 " + script + " -n TestPlugin -p " + fixture.testDir + " --priority invalid";
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n TestPlugin -p " + fixture.testDir + " --priority invalid";
         auto result = ScriptExecutor::execute(cmd);
         // Should either fail or use default priority
         // Implementation-dependent behavior
@@ -298,7 +324,7 @@ TEST_CASE("create-application.py - Help option works", "[tools][create-applicati
     std::string script = fixture.getScriptPath("create-application.py");
     REQUIRE(fixture.fs.exists(script));
 
-    auto result = ScriptExecutor::execute("python3 " + script + " --help");
+    auto result = ScriptExecutor::execute(ScriptExecutor::getPythonExecutable() + " " + script + " --help");
 
     REQUIRE(result.success());
     REQUIRE(result.output.find("usage:") != std::string::npos);
@@ -313,7 +339,7 @@ TEST_CASE("create-application.py - Basic application creation", "[tools][create-
     std::string appDir = fixture.getTestPath("TestApp");
 
     SECTION("Create basic application") {
-        std::string cmd = "python3 " + script + " -n TestApp -o " + appDir;
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n TestApp -o " + appDir;
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
@@ -333,7 +359,7 @@ TEST_CASE("create-application.py - Basic application creation", "[tools][create-
     }
 
     SECTION("Create realtime application") {
-        std::string cmd = "python3 " + script + " -n RealtimeApp -r -o " + fixture.getTestPath("RealtimeApp");
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n RealtimeApp -r -o " + fixture.getTestPath("RealtimeApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -344,7 +370,7 @@ TEST_CASE("create-application.py - Basic application creation", "[tools][create-
     }
 
     SECTION("Create application with config support") {
-        std::string cmd = "python3 " + script + " -n ConfigApp -c -o " + fixture.getTestPath("ConfigApp");
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n ConfigApp -c -o " + fixture.getTestPath("ConfigApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -354,7 +380,7 @@ TEST_CASE("create-application.py - Basic application creation", "[tools][create-
     }
 
     SECTION("Create application with modules") {
-        std::string cmd = "python3 " + script + " -n ModuleApp -m logger,profiling -o " + fixture.getTestPath("ModuleApp");
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n ModuleApp -m logger,profiling -o " + fixture.getTestPath("ModuleApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -378,7 +404,7 @@ TEST_CASE("package-application.py - Help option works", "[tools][package]") {
     std::string script = fixture.getScriptPath("package-application.py");
     REQUIRE(fixture.fs.exists(script));
 
-    auto result = ScriptExecutor::execute("python3 " + script + " --help");
+    auto result = ScriptExecutor::execute(ScriptExecutor::getPythonExecutable() + " " + script + " --help");
 
     REQUIRE(result.success());
     REQUIRE(result.output.find("usage:") != std::string::npos);
@@ -465,7 +491,7 @@ TEST_CASE("Tools Integration - Create plugin and verify buildable", "[tools][int
 
     SECTION("Create plugin and check CMake validity") {
         // Create plugin
-        std::string createCmd = "python3 " + pluginScript + " -n IntegrationPlugin -r -o " + fixture.testDir + "/plugins";
+        std::string createCmd = ScriptExecutor::getPythonExecutable() + " " + pluginScript + " -n IntegrationPlugin -r -o " + fixture.testDir + "/plugins";
         auto createResult = ScriptExecutor::execute(createCmd);
 
         REQUIRE(createResult.success());
@@ -489,7 +515,7 @@ TEST_CASE("Tools Integration - Create application and verify structure", "[tools
     std::string appDir = fixture.getTestPath("IntegrationApp");
 
     SECTION("Create full-featured application") {
-        std::string createCmd = "python3 " + appScript + " -n IntegrationApp -r -e -c -m logger,profiling -o " + appDir;
+        std::string createCmd = ScriptExecutor::getPythonExecutable() + " " + appScript + " -n IntegrationApp -r -e -c -m logger,profiling -o " + appDir;
         auto createResult = ScriptExecutor::execute(createCmd);
 
         INFO("Command: " << createCmd);
