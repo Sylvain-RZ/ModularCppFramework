@@ -228,8 +228,10 @@ TEST_CASE("create-plugin.py - Help option works", "[tools][create-plugin]") {
     auto result = ScriptExecutor::execute(ScriptExecutor::getPythonExecutable() + " " + script + " --help");
 
     REQUIRE(result.success());
-    REQUIRE(result.output.find("usage:") != std::string::npos);
-    REQUIRE(result.output.find("options:") != std::string::npos);
+    // Help text can be in stdout or stderr depending on platform
+    std::string combined = result.output + result.error;
+    REQUIRE(combined.find("usage:") != std::string::npos);
+    REQUIRE(combined.find("options:") != std::string::npos);
 }
 
 TEST_CASE("create-plugin.py - Basic plugin creation", "[tools][create-plugin]") {
@@ -335,8 +337,10 @@ TEST_CASE("create-application.py - Help option works", "[tools][create-applicati
     auto result = ScriptExecutor::execute(ScriptExecutor::getPythonExecutable() + " " + script + " --help");
 
     REQUIRE(result.success());
-    REQUIRE(result.output.find("usage:") != std::string::npos);
-    REQUIRE(result.output.find("options:") != std::string::npos);
+    // Help text can be in stdout or stderr depending on platform
+    std::string combined = result.output + result.error;
+    REQUIRE(combined.find("usage:") != std::string::npos);
+    REQUIRE(combined.find("options:") != std::string::npos);
 }
 
 TEST_CASE("create-application.py - Basic application creation", "[tools][create-application]") {
@@ -415,8 +419,10 @@ TEST_CASE("package-application.py - Help option works", "[tools][package]") {
     auto result = ScriptExecutor::execute(ScriptExecutor::getPythonExecutable() + " " + script + " --help");
 
     REQUIRE(result.success());
-    REQUIRE(result.output.find("usage:") != std::string::npos);
-    REQUIRE(result.output.find("options:") != std::string::npos);
+    // Help text can be in stdout or stderr depending on platform
+    std::string combined = result.output + result.error;
+    REQUIRE(combined.find("usage:") != std::string::npos);
+    REQUIRE(combined.find("options:") != std::string::npos);
 }
 
 TEST_CASE("package-application.py - Package MCF examples", "[tools][package][integration]") {
