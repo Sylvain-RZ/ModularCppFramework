@@ -4,6 +4,8 @@ bin/
 cmake-build-*/
 out/
 dist/
+release/
+debug/
 
 # CMake Generated Files
 CMakeCache.txt
@@ -14,6 +16,8 @@ Makefile
 *.cmake
 !CMakeLists.txt
 !*/CMakeLists.txt
+!cmake/*.cmake
+!portfile.cmake
 
 # Compiled Object Files and Libraries
 *.o
