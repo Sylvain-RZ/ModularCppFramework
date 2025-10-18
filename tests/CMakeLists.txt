@@ -102,6 +102,13 @@ add_executable(test_eventbus_edge_cases
 target_link_libraries(test_eventbus_edge_cases PRIVATE mcf_core Catch2)
 add_test(NAME EventBusEdgeCases COMMAND test_eventbus_edge_cases)
 
+# PluginManager Edge Cases Tests
+add_executable(test_plugin_manager_edge_cases
+    unit/test_plugin_manager_edge_cases.cpp
+)
+target_link_libraries(test_plugin_manager_edge_cases PRIVATE mcf_core Catch2)
+add_test(NAME PluginManagerEdgeCases COMMAND test_plugin_manager_edge_cases)
+
 # ============================================
 # Integration Tests
 # ============================================
@@ -196,6 +203,7 @@ set_target_properties(
     test_logger_module
     test_logger_edge_cases
     test_eventbus_edge_cases
+    test_plugin_manager_edge_cases
     test_app
     test_plugin_manager
     test_config
@@ -215,7 +223,7 @@ set_target_properties(
 
 # Run all unit tests
 add_custom_target(unit_tests
-    COMMAND ${CMAKE_CTEST_COMMAND} -R "EventBus|ServiceLocator|ResourceManager|DependencyResolver|FileWatcher|ThreadPool|FileSystem|PluginLoader|Application|Module|JsonParserEdgeCases|LoggerModule|LoggerEdgeCases|EventBusEdgeCases" --exclude-regex Integration
+    COMMAND ${CMAKE_CTEST_COMMAND} -R "EventBus|ServiceLocator|ResourceManager|DependencyResolver|FileWatcher|ThreadPool|FileSystem|PluginLoader|Application|Module|JsonParserEdgeCases|LoggerModule|LoggerEdgeCases|EventBusEdgeCases|PluginManagerEdgeCases" --exclude-regex Integration
     DEPENDS test_eventbus
             test_service_locator
             test_resource_manager
@@ -230,6 +238,7 @@ add_custom_target(unit_tests
             test_logger_module
             test_logger_edge_cases
             test_eventbus_edge_cases
+            test_plugin_manager_edge_cases
     COMMENT "Running unit tests..."
 )
 
