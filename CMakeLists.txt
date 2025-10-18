@@ -217,9 +217,19 @@ add_custom_target(package-release
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/package/modular-cpp-framework-${PROJECT_VERSION}
 
     # Copy headers (only .hpp files, exclude build artifacts)
-    COMMAND ${CMAKE_SOURCE_DIR}/cmake/package-headers.sh
-            ${CMAKE_SOURCE_DIR}
-            ${CMAKE_BINARY_DIR}/package/modular-cpp-framework-${PROJECT_VERSION}/include/mcf
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/package/modular-cpp-framework-${PROJECT_VERSION}/include/mcf
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/core
+            ${CMAKE_BINARY_DIR}/package/modular-cpp-framework-${PROJECT_VERSION}/include/mcf/core
+            PATTERN "*.cpp" EXCLUDE
+            PATTERN "*.o" EXCLUDE
+            PATTERN "build" EXCLUDE
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/modules
+            ${CMAKE_BINARY_DIR}/package/modular-cpp-framework-${PROJECT_VERSION}/include/mcf/modules
+            PATTERN "*.cpp" EXCLUDE
+            PATTERN "*.o" EXCLUDE
+            PATTERN "build" EXCLUDE
 
     # Copy documentation
     COMMAND ${CMAKE_COMMAND} -E copy

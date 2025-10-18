@@ -58,6 +58,15 @@ function(mcf_package_application)
     set(PLATFORM_ID "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
     string(TOLOWER ${PLATFORM_ID} PLATFORM_ID)
 
+    # Determine archive format based on platform
+    if(WIN32)
+        set(ARCHIVE_EXT "zip")
+        set(TAR_FLAGS "cfv")
+    else()
+        set(ARCHIVE_EXT "tar.gz")
+        set(TAR_FLAGS "czf")
+    endif()
+
     # Package directory structure
     set(PACKAGE_DIR "${CMAKE_BINARY_DIR}/package")
     set(PACKAGE_ROOT "${PACKAGE_DIR}/${PKG_OUTPUT_NAME}-${PKG_VERSION}")
@@ -152,13 +161,13 @@ For more information, visit the project documentation.
                 ${PACKAGE_ROOT}/README.txt
     )
 
-    # Create tarball
+    # Create archive (tar.gz on Unix, zip on Windows)
     add_custom_command(TARGET package-${PKG_TARGET} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E tar czf
-                ${CMAKE_BINARY_DIR}/${PKG_OUTPUT_NAME}-${PKG_VERSION}-${PLATFORM_ID}.tar.gz
+        COMMAND ${CMAKE_COMMAND} -E tar ${TAR_FLAGS}
+                ${CMAKE_BINARY_DIR}/${PKG_OUTPUT_NAME}-${PKG_VERSION}-${PLATFORM_ID}.${ARCHIVE_EXT}
                 ${PKG_OUTPUT_NAME}-${PKG_VERSION}
         WORKING_DIRECTORY ${PACKAGE_DIR}
-        COMMENT "Creating archive: ${PKG_OUTPUT_NAME}-${PKG_VERSION}-${PLATFORM_ID}.tar.gz"
+        COMMENT "Creating archive: ${PKG_OUTPUT_NAME}-${PKG_VERSION}-${PLATFORM_ID}.${ARCHIVE_EXT}"
     )
 
     # Print summary
@@ -166,7 +175,7 @@ For more information, visit the project documentation.
         COMMAND ${CMAKE_COMMAND} -E echo ""
         COMMAND ${CMAKE_COMMAND} -E echo "=========================================="
         COMMAND ${CMAKE_COMMAND} -E echo "Package created successfully!"
-        COMMAND ${CMAKE_COMMAND} -E echo "Location: ${CMAKE_BINARY_DIR}/${PKG_OUTPUT_NAME}-${PKG_VERSION}-${PLATFORM_ID}.tar.gz"
+        COMMAND ${CMAKE_COMMAND} -E echo "Location: ${CMAKE_BINARY_DIR}/${PKG_OUTPUT_NAME}-${PKG_VERSION}-${PLATFORM_ID}.${ARCHIVE_EXT}"
         COMMAND ${CMAKE_COMMAND} -E echo "=========================================="
         COMMAND ${CMAKE_COMMAND} -E echo ""
     )
@@ -260,6 +269,15 @@ function(mcf_package_application_bundle)
 
     # Platform identifier
     set(PLATFORM_ID "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+
+    # Determine archive format based on platform
+    if(WIN32)
+        set(ARCHIVE_EXT "zip")
+        set(TAR_FLAGS "cfv")
+    else()
+        set(ARCHIVE_EXT "tar.gz")
+        set(TAR_FLAGS "czf")
+    endif()
 
     # Package directory structure
     set(PACKAGE_DIR "${CMAKE_BINARY_DIR}/package-apps")
@@ -374,13 +392,13 @@ function(mcf_package_application_bundle)
                 ${PACKAGE_ROOT}/README.txt
     )
 
-    # Create tarball
+    # Create archive (tar.gz on Unix, zip on Windows)
     add_custom_command(TARGET package-${BUNDLE_TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E tar czf
-                ${CMAKE_BINARY_DIR}/${BUNDLE_BUNDLE_NAME}-${BUNDLE_VERSION}-${PLATFORM_ID}.tar.gz
+        COMMAND ${CMAKE_COMMAND} -E tar ${TAR_FLAGS}
+                ${CMAKE_BINARY_DIR}/${BUNDLE_BUNDLE_NAME}-${BUNDLE_VERSION}-${PLATFORM_ID}.${ARCHIVE_EXT}
                 ${BUNDLE_BUNDLE_NAME}-${BUNDLE_VERSION}
         WORKING_DIRECTORY ${PACKAGE_DIR}
-        COMMENT "Creating bundle archive: ${BUNDLE_BUNDLE_NAME}-${BUNDLE_VERSION}-${PLATFORM_ID}.tar.gz"
+        COMMENT "Creating bundle archive: ${BUNDLE_BUNDLE_NAME}-${BUNDLE_VERSION}-${PLATFORM_ID}.${ARCHIVE_EXT}"
     )
 
     # Print summary
@@ -388,7 +406,7 @@ function(mcf_package_application_bundle)
         COMMAND ${CMAKE_COMMAND} -E echo ""
         COMMAND ${CMAKE_COMMAND} -E echo "=========================================="
         COMMAND ${CMAKE_COMMAND} -E echo "Bundle created successfully!"
-        COMMAND ${CMAKE_COMMAND} -E echo "Location: ${CMAKE_BINARY_DIR}/${BUNDLE_BUNDLE_NAME}-${BUNDLE_VERSION}-${PLATFORM_ID}.tar.gz"
+        COMMAND ${CMAKE_COMMAND} -E echo "Location: ${CMAKE_BINARY_DIR}/${BUNDLE_BUNDLE_NAME}-${BUNDLE_VERSION}-${PLATFORM_ID}.${ARCHIVE_EXT}"
         COMMAND ${CMAKE_COMMAND} -E echo "=========================================="
         COMMAND ${CMAKE_COMMAND} -E echo ""
     )

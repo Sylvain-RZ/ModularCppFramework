@@ -17,29 +17,30 @@ Le système de génération d'applications MCF permet de créer rapidement de no
 
 Le générateur est inclus dans le dépôt MCF. Aucune installation supplémentaire n'est nécessaire.
 
+**Prérequis:**
+- Python 3.6+ (cross-platform)
+- CMake 3.15+
+
 **Fichiers:**
+- `tools/create-application.py` - Script Python cross-platform
 - `cmake/MCFApplicationGenerator.cmake` - Fonctions CMake
-- `cmake/create-application.sh` - Script shell helper
 - `cmake/templates/Application_*.in` - Templates de génération
 
 ## Utilisation Rapide
 
-### Méthode 1: Script Shell (Recommandé)
+### Méthode 1: Script Python (Recommandé - Cross-platform)
 
 ```bash
-# Depuis la racine du projet MCF
-./cmake/create-application.sh -n MyApp
+# Linux/macOS
+python3 tools/create-application.py -n MyApp
+
+# Windows
+python tools/create-application.py -n MyApp
 ```
 
 Cela génère une application basique dans `MyApp/`.
 
-### Méthode 2: Make
-
-```bash
-make -f cmake/Makefile app NAME=MyApp
-```
-
-### Méthode 3: CMake Direct
+### Méthode 2: CMake Direct
 
 ```cmake
 # generate.cmake
@@ -57,10 +58,14 @@ cmake -P generate.cmake
 
 ## Options Disponibles
 
-### Script Shell
+### Script Python
 
 ```bash
-./cmake/create-application.sh [options]
+# Linux/macOS
+python3 tools/create-application.py [options]
+
+# Windows
+python tools/create-application.py [options]
 ```
 
 | Option | Description | Requis | Défaut |
@@ -101,7 +106,11 @@ mcf_generate_application(
 **Cas d'usage:** Application simple sans boucle de mise à jour ni événements.
 
 ```bash
-./cmake/create-application.sh -n MyApp
+# Linux/macOS
+python3 tools/create-application.py -n MyApp
+
+# Windows
+python tools/create-application.py -n MyApp
 ```
 
 **Caractéristiques:**
@@ -115,7 +124,11 @@ mcf_generate_application(
 **Cas d'usage:** Application avec boucle de mise à jour (jeux, simulations).
 
 ```bash
-./cmake/create-application.sh -n MyGame -r -c
+# Linux/macOS
+python3 tools/create-application.py -n MyGame -r -c
+
+# Windows
+python tools/create-application.py -n MyGame -r -c
 ```
 
 **Caractéristiques:**
@@ -129,7 +142,11 @@ mcf_generate_application(
 **Cas d'usage:** Application réactive basée sur événements.
 
 ```bash
-./cmake/create-application.sh -n MyServer -e -c
+# Linux/macOS
+python3 tools/create-application.py -n MyServer -e -c
+
+# Windows
+python tools/create-application.py -n MyServer -e -c
 ```
 
 **Caractéristiques:**
@@ -143,7 +160,11 @@ mcf_generate_application(
 **Cas d'usage:** Application complète avec toutes les fonctionnalités.
 
 ```bash
-./cmake/create-application.sh -n MyGame -r -e -c -m logger,profiling
+# Linux/macOS
+python3 tools/create-application.py -n MyGame -r -e -c -m logger,profiling
+
+# Windows
+python tools/create-application.py -n MyGame -r -e -c -m logger,profiling
 ```
 
 **Caractéristiques:**
@@ -174,7 +195,8 @@ Les modules suivants peuvent être inclus avec `-m` ou `MODULES`:
 ### Exemple 1: Jeu Simple
 
 ```bash
-./cmake/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n SimpleGame \
     -v 1.0.0 \
     -a "Game Team" \
@@ -182,6 +204,9 @@ Les modules suivants peuvent être inclus avec `-m` ou `MODULES`:
     -m logger,profiling,realtime \
     -r \
     -c
+
+# Windows
+python tools/create-application.py -n SimpleGame -v 1.0.0 -a "Game Team" -d "A simple 2D game" -m logger,profiling,realtime -r -c
 ```
 
 **Génère:**
@@ -193,7 +218,8 @@ Les modules suivants peuvent être inclus avec `-m` ou `MODULES`:
 ### Exemple 2: Serveur Network
 
 ```bash
-./cmake/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n GameServer \
     -v 2.0.0 \
     -a "Server Team" \
@@ -201,6 +227,9 @@ Les modules suivants peuvent être inclus avec `-m` ou `MODULES`:
     -m logger,networking \
     -e \
     -c
+
+# Windows
+python tools/create-application.py -n GameServer -v 2.0.0 -a "Server Team" -d "Multiplayer game server" -m logger,networking -e -c
 ```
 
 **Génère:**
@@ -212,11 +241,15 @@ Les modules suivants peuvent être inclus avec `-m` ou `MODULES`:
 ### Exemple 3: Outil CLI
 
 ```bash
-./cmake/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n DataProcessor \
     -v 1.0.0 \
     -d "Batch data processing tool" \
     -m logger
+
+# Windows
+python tools/create-application.py -n DataProcessor -v 1.0.0 -d "Batch data processing tool" -m logger
 ```
 
 **Génère:**
@@ -227,13 +260,17 @@ Les modules suivants peuvent être inclus avec `-m` ou `MODULES`:
 ### Exemple 4: Application avec Plugins
 
 ```bash
-./cmake/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n ModularApp \
     -v 1.0.0 \
     -m logger,profiling \
     -p physics_plugin,audio_plugin \
     -r \
     -c
+
+# Windows
+python tools/create-application.py -n ModularApp -v 1.0.0 -m logger,profiling -p physics_plugin,audio_plugin -r -c
 ```
 
 **Génère:**
@@ -298,7 +335,11 @@ Contient:
 ### 1. Génération
 
 ```bash
-./cmake/create-application.sh -n MyGame -r -c -m logger,profiling
+# Linux/macOS
+python3 tools/create-application.py -n MyGame -r -c -m logger,profiling
+
+# Windows
+python tools/create-application.py -n MyGame -r -c -m logger,profiling
 ```
 
 ### 2. Configuration MCF

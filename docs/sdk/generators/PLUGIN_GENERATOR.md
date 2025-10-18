@@ -16,18 +16,25 @@ Le système de génération de plugins MCF permet de créer rapidement de nouvea
 
 Le générateur est inclus dans le dépôt MCF. Aucune installation supplémentaire n'est nécessaire.
 
+**Prérequis:**
+- Python 3.6+ (cross-platform)
+- CMake 3.15+
+
 **Fichiers:**
+- `tools/create-plugin.py` - Script Python cross-platform
 - `cmake/MCFPluginGenerator.cmake` - Fonctions CMake
-- `cmake/create-plugin.sh` - Script shell helper
 - `cmake/templates/` - Templates de génération
 
 ## Utilisation Rapide
 
-### Méthode 1: Script Shell (Recommandé)
+### Méthode 1: Script Python (Recommandé - Cross-platform)
 
 ```bash
-# Depuis la racine du projet MCF
-./cmake/create-plugin.sh -n MyPlugin
+# Linux/macOS
+python3 tools/create-plugin.py -n MyPlugin
+
+# Windows
+python tools/create-plugin.py -n MyPlugin
 ```
 
 Cela génère un plugin basique dans `plugins/MyPlugin/`.
@@ -50,10 +57,14 @@ cmake -P generate.cmake
 
 ## Options Disponibles
 
-### Script Shell
+### Script Python
 
 ```bash
-./cmake/create-plugin.sh [options]
+# Linux/macOS
+python3 tools/create-plugin.py [options]
+
+# Windows
+python tools/create-plugin.py [options]
 ```
 
 | Option | Description | Requis | Défaut |
@@ -90,7 +101,11 @@ mcf_generate_plugin(
 **Cas d'usage:** Plugin simple sans mises à jour en temps réel ni gestion d'événements.
 
 ```bash
-./cmake/create-plugin.sh -n ConfigLoaderPlugin
+# Linux/macOS
+python3 tools/create-plugin.py -n ConfigLoaderPlugin
+
+# Windows
+python tools/create-plugin.py -n ConfigLoaderPlugin
 ```
 
 **Interfaces:** `IPlugin`
@@ -100,7 +115,11 @@ mcf_generate_plugin(
 **Cas d'usage:** Plugin nécessitant des mises à jour à chaque frame (physique, animation, IA).
 
 ```bash
-./cmake/create-plugin.sh -n PhysicsPlugin -r
+# Linux/macOS
+python3 tools/create-plugin.py -n PhysicsPlugin -r
+
+# Windows
+python tools/create-plugin.py -n PhysicsPlugin -r
 ```
 
 **Interfaces:** `IPlugin`, `IRealtimeUpdatable`
@@ -117,7 +136,11 @@ void onRealtimeUpdate(float deltaTime) override {
 **Cas d'usage:** Plugin réagissant uniquement aux événements (notifications, logs, métriques).
 
 ```bash
-./cmake/create-plugin.sh -n NotificationPlugin -e
+# Linux/macOS
+python3 tools/create-plugin.py -n NotificationPlugin -e
+
+# Windows
+python tools/create-plugin.py -n NotificationPlugin -e
 ```
 
 **Interfaces:** `IPlugin`, `IEventDriven`
@@ -134,7 +157,11 @@ void onEvent(const mcf::Event& event) override {
 **Cas d'usage:** Plugin complexe combinant updates temps réel et gestion d'événements (gameplay, networking).
 
 ```bash
-./cmake/create-plugin.sh -n GameLogicPlugin -r -e
+# Linux/macOS
+python3 tools/create-plugin.py -n GameLogicPlugin -r -e
+
+# Windows
+python tools/create-plugin.py -n GameLogicPlugin -r -e
 ```
 
 **Interfaces:** `IPlugin`, `IRealtimeUpdatable`, `IEventDriven`
@@ -144,36 +171,48 @@ void onEvent(const mcf::Event& event) override {
 ### Exemple 1: Plugin Audio
 
 ```bash
-./cmake/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n AudioPlugin \
     -v 2.0.0 \
     -a "Audio Team" \
     -d "Audio processing and playback system" \
     -p 200 \
     -r
+
+# Windows
+python tools/create-plugin.py -n AudioPlugin -v 2.0.0 -a "Audio Team" -d "Audio processing and playback system" -p 200 -r
 ```
 
 ### Exemple 2: Plugin Network
 
 ```bash
-./cmake/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n NetworkPlugin \
     -v 1.5.0 \
     -a "Network Team" \
     -d "Network communication layer" \
     -p 300 \
     -r -e
+
+# Windows
+python tools/create-plugin.py -n NetworkPlugin -v 1.5.0 -a "Network Team" -d "Network communication layer" -p 300 -r -e
 ```
 
 ### Exemple 3: Plugin Analytics
 
 ```bash
-./cmake/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n AnalyticsPlugin \
     -v 1.0.0 \
     -a "Analytics Team" \
     -d "Collects and reports analytics data" \
     -e
+
+# Windows
+python tools/create-plugin.py -n AnalyticsPlugin -v 1.0.0 -a "Analytics Team" -d "Collects and reports analytics data" -e
 ```
 
 ### Exemple 4: Multiple plugins via CMake
@@ -239,7 +278,11 @@ Contient:
 ### 1. Génération
 
 ```bash
-./cmake/create-plugin.sh -n MyPlugin -r
+# Linux/macOS
+python3 tools/create-plugin.py -n MyPlugin -r
+
+# Windows
+python tools/create-plugin.py -n MyPlugin -r
 ```
 
 ### 2. Ajout au Build

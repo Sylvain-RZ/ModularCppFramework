@@ -11,32 +11,19 @@ Commencez à créer des plugins et applications en 30 secondes!
 
 # Plugins
 
-## Méthode 1: Script Shell (Le plus simple)
+## Méthode 1: Script Python (Le plus simple - Cross-platform)
 
 ```bash
-# Depuis la racine du projet
-./cmake/create-plugin.sh -n MyPlugin
+# Linux/macOS
+python3 tools/create-plugin.py -n MyPlugin
+
+# Windows
+python tools/create-plugin.py -n MyPlugin
 ```
 
 C'est tout! Votre plugin est généré dans `plugins/MyPlugin/`.
 
-## Méthode 2: Makefile (Raccourcis pratiques)
-
-```bash
-# Plugin basique
-make -f cmake/Makefile plugin-basic NAME=MyPlugin
-
-# Plugin realtime
-make -f cmake/Makefile plugin-realtime NAME=PhysicsEngine
-
-# Plugin event-driven
-make -f cmake/Makefile plugin-event NAME=NotificationSystem
-
-# Plugin complet (realtime + events)
-make -f cmake/Makefile plugin-full NAME=GameLogic
-```
-
-## Méthode 3: CMake Direct
+## Méthode 2: CMake Direct
 
 ```cmake
 # generate.cmake
@@ -91,17 +78,25 @@ Votre plugin sera dans `build/plugins/myplugin.so`!
 ### Avec version et auteur
 
 ```bash
-./cmake/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n AudioPlugin \
     -v 2.0.0 \
     -a "Audio Team" \
     -d "Audio processing system"
+
+# Windows
+python tools/create-plugin.py -n AudioPlugin -v 2.0.0 -a "Audio Team" -d "Audio processing system"
 ```
 
 ### Avec priorité de chargement
 
 ```bash
-./cmake/create-plugin.sh -n CorePlugin -p 500
+# Linux/macOS
+python3 tools/create-plugin.py -n CorePlugin -p 500
+
+# Windows
+python tools/create-plugin.py -n CorePlugin -p 500
 ```
 
 Les priorités plus élevées sont chargées en premier (défaut: 100).
@@ -109,7 +104,11 @@ Les priorités plus élevées sont chargées en premier (défaut: 100).
 ### Plugin realtime (mise à jour chaque frame)
 
 ```bash
-./cmake/create-plugin.sh -n PhysicsPlugin -r
+# Linux/macOS
+python3 tools/create-plugin.py -n PhysicsPlugin -r
+
+# Windows
+python tools/create-plugin.py -n PhysicsPlugin -r
 ```
 
 Ajoute la méthode `onRealtimeUpdate(float deltaTime)`.
@@ -117,7 +116,11 @@ Ajoute la méthode `onRealtimeUpdate(float deltaTime)`.
 ### Plugin event-driven (réagit aux événements)
 
 ```bash
-./cmake/create-plugin.sh -n LoggerPlugin -e
+# Linux/macOS
+python3 tools/create-plugin.py -n LoggerPlugin -e
+
+# Windows
+python tools/create-plugin.py -n LoggerPlugin -e
 ```
 
 Ajoute la méthode `onEvent(const Event& event)`.
@@ -125,7 +128,11 @@ Ajoute la méthode `onEvent(const Event& event)`.
 ### Plugin complet
 
 ```bash
-./cmake/create-plugin.sh -n GamePlugin -r -e -p 300
+# Linux/macOS
+python3 tools/create-plugin.py -n GamePlugin -r -e -p 300
+
+# Windows
+python tools/create-plugin.py -n GamePlugin -r -e -p 300
 ```
 
 Combine realtime + events.
@@ -135,13 +142,17 @@ Combine realtime + events.
 ### Plugin de Physique
 
 ```bash
-./cmake/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n PhysicsEngine \
     -v 1.0.0 \
     -a "Physics Team" \
     -d "2D physics simulation" \
     -p 400 \
     -r
+
+# Windows
+python tools/create-plugin.py -n PhysicsEngine -v 1.0.0 -a "Physics Team" -d "2D physics simulation" -p 400 -r
 ```
 
 Génère un plugin avec:
@@ -152,10 +163,14 @@ Génère un plugin avec:
 ### Plugin d'Analytics
 
 ```bash
-./cmake/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n Analytics \
     -d "Collects and reports user analytics" \
     -e
+
+# Windows
+python tools/create-plugin.py -n Analytics -d "Collects and reports user analytics" -e
 ```
 
 Génère un plugin event-driven pour collecter les événements.
@@ -163,11 +178,15 @@ Génère un plugin event-driven pour collecter les événements.
 ### Plugin Réseau
 
 ```bash
-./cmake/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n NetworkManager \
     -v 2.0.0 \
     -r -e \
     -p 500
+
+# Windows
+python tools/create-plugin.py -n NetworkManager -v 2.0.0 -r -e -p 500
 ```
 
 Génère un plugin complet avec realtime (polling réseau) et events (messages reçus).
@@ -175,23 +194,24 @@ Génère un plugin complet avec realtime (polling réseau) et events (messages r
 ## Aide
 
 ```bash
-./cmake/create-plugin.sh --help
-make -f cmake/Makefile help
+# Linux/macOS
+python3 tools/create-plugin.py --help
+
+# Windows
+python tools/create-plugin.py --help
 ```
 
 ## Documentation Complète
 
 - [PLUGIN_GENERATOR.md](PLUGIN_GENERATOR.md) - Guide complet
-- [README.md](README.md) - Documentation du système cmake
-- [examples/](examples/) - Exemples avancés
+- [README.md](README.md) - Documentation du système
+- [APPLICATION_GENERATOR.md](APPLICATION_GENERATOR.md) - Générateur d'applications
 
 ## Dépannage
 
-### "Permission denied"
+### "Python not found"
 
-```bash
-chmod +x ./cmake/create-plugin.sh
-```
+Installez Python 3.6+ depuis [python.org](https://www.python.org/)
 
 ### Plugin ne compile pas
 
@@ -214,29 +234,19 @@ Vous êtes maintenant prêt à créer des plugins MCF. Bonne chance! 🚀
 
 Créez une nouvelle application MCF complète en quelques secondes!
 
-## Méthode 1: Script Shell (Le plus simple)
+## Méthode 1: Script Python (Le plus simple - Cross-platform)
 
 ```bash
-# Depuis la racine du projet
-./cmake/create-application.sh -n MyApp
+# Linux/macOS
+python3 tools/create-application.py -n MyApp
+
+# Windows
+python tools/create-application.py -n MyApp
 ```
 
 C'est tout! Votre application est générée dans `MyApp/`.
 
-## Méthode 2: Makefile (Raccourcis pratiques)
-
-```bash
-# Application basique
-make -f cmake/Makefile app NAME=MyApp
-
-# Application realtime (avec update loop)
-make -f cmake/Makefile app-realtime NAME=MyGame
-
-# Application complète (realtime + events + config + modules)
-make -f cmake/Makefile app-full NAME=MyGame
-```
-
-## Méthode 3: CMake Direct
+## Méthode 2: CMake Direct
 
 ```cmake
 # generate.cmake
@@ -282,10 +292,14 @@ Votre application est maintenant en cours d'exécution!
 ### Avec modules
 
 ```bash
-./cmake/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n MyGame \
     -m logger,profiling \
     -r -c
+
+# Windows
+python tools/create-application.py -n MyGame -m logger,profiling -r -c
 ```
 
 Génère une application avec:
@@ -296,10 +310,14 @@ Génère une application avec:
 ### Application de serveur
 
 ```bash
-./cmake/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n GameServer \
     -m networking,logger \
     -e -c
+
+# Windows
+python tools/create-application.py -n GameServer -m networking,logger -e -c
 ```
 
 Génère une application avec:
@@ -311,13 +329,17 @@ Génère une application avec:
 ### Application complète
 
 ```bash
-./cmake/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n FullGame \
     -v 2.0.0 \
     -a "Game Team" \
     -d "My awesome game" \
     -m logger,profiling,networking,realtime \
     -r -e -c
+
+# Windows
+python tools/create-application.py -n FullGame -v 2.0.0 -a "Game Team" -d "My awesome game" -m logger,profiling,networking,realtime -r -e -c
 ```
 
 Génère une application avec toutes les options!
@@ -325,8 +347,11 @@ Génère une application avec toutes les options!
 ## Aide
 
 ```bash
-./cmake/create-application.sh --help
-make -f cmake/Makefile help-app
+# Linux/macOS
+python3 tools/create-application.py --help
+
+# Windows
+python tools/create-application.py --help
 ```
 
 ## Documentation Complète

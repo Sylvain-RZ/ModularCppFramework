@@ -58,14 +58,17 @@ make -j$(nproc)
 
 ### Générateurs Automatiques - Créer une Application en 30 Secondes
 
-**Nouveau!** MCF inclut des générateurs automatiques pour créer rapidement plugins et applications:
+**Nouveau!** MCF inclut des générateurs automatiques cross-platform pour créer rapidement plugins et applications:
 
 ```bash
 # Créer une application complète en une commande
-./tools/create-application.sh -n MyGame -r -c -m logger,profiling
+python3 tools/create-application.py -n MyGame -r -c -m logger,profiling
 
 # Créer un plugin realtime en une commande
-./tools/create-plugin.sh -n PhysicsPlugin -r
+python3 tools/create-plugin.py -n PhysicsPlugin -r
+
+# Sur Windows, utilisez 'python' au lieu de 'python3'
+python tools/create-application.py -n MyGame -r -c -m logger,profiling
 ```
 
 **Voir** → [Guide Quick Start Générateurs](docs/sdk/generators/QUICKSTART.md) pour plus de détails.
@@ -146,11 +149,12 @@ ModularCppFramework/
 │   └── networking/              # NetworkingModule
 ├── plugins/                     # Plugins dynamiques (exemples)
 ├── examples/                    # Applications exemple (8 exemples)
-├── tests/                       # Tests (25 tests, 100% passent)
-├── tools/                       # 🆕 Scripts de génération
-│   ├── create-plugin.sh         # Générateur de plugins
-│   ├── create-application.sh    # Générateur d'applications
-│   └── package-application.sh   # Outil de packaging
+├── tests/                       # Tests (27 tests, 100% passent)
+├── tools/                       # 🆕 Scripts de génération (Python)
+│   ├── create-plugin.py         # Générateur de plugins
+│   ├── create-application.py    # Générateur d'applications
+│   ├── package-application.py   # Outil de packaging
+│   └── README.md                # Documentation des outils
 ├── cmake/                       # 🆕 Système CMake & Templates
 │   ├── MCFPluginGenerator.cmake      # Fonctions CMake plugins
 │   ├── MCFApplicationGenerator.cmake # Fonctions CMake applications
@@ -189,13 +193,14 @@ cmake -DBUILD_TESTS=ON ..
 make -j$(nproc)
 ctest -V
 
-# Résultat: 100% tests passed, 0 tests failed out of 25
+# Résultat: 100% tests passed, 0 tests failed out of 27
 ```
 
 **Statistiques:**
-- 25 tests (100% passent)
-- 16 tests unitaires
+- 27 tests (100% passent)
+- 17 tests unitaires
 - 8 tests d'intégration
+- 2 tests additionnels (configuration, logger)
 - Couverture complète de tous les composants core
 
 **Détails** → Voir [Test Coverage](docs/development/TEST_COVERAGE.md)

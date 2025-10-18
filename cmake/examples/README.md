@@ -25,16 +25,16 @@ For most use cases, the shell script is easier:
 
 ```bash
 # Basic plugin
-./cmake/create-plugin.sh -n MyPlugin
+python3 tools/create-plugin.py -n MyPlugin
 
 # Realtime plugin
-./cmake/create-plugin.sh -n PhysicsPlugin -r
+python3 tools/create-plugin.py -n PhysicsPlugin -r
 
 # Event-driven plugin
-./cmake/create-plugin.sh -n NotificationPlugin -e
+python3 tools/create-plugin.py -n NotificationPlugin -e
 
 # Full-featured plugin
-./cmake/create-plugin.sh \
+python3 tools/create-plugin.py \
     -n GameLogicPlugin \
     -v 3.0.0 \
     -a "Game Team" \

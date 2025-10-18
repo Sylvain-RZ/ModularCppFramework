@@ -5,34 +5,32 @@ Index complet de tous les fichiers du système CMake de ModularCppFramework.
 ## 📂 Structure des Fichiers
 
 ```
-cmake/
+ModularCppFramework/
 ├── 📖 Documentation
-│   ├── README.md                      - Documentation principale
-│   ├── QUICKSTART.md                  - Guide de démarrage rapide (30 sec)
-│   ├── PLUGIN_GENERATOR.md            - Guide complet du générateur
-│   └── INDEX.md                       - Ce fichier
+│   └── docs/sdk/generators/
+│       ├── README.md                      - Documentation principale
+│       ├── QUICKSTART.md                  - Guide de démarrage rapide (30 sec)
+│       ├── PLUGIN_GENERATOR.md            - Guide complet du générateur de plugins
+│       ├── APPLICATION_GENERATOR.md       - Guide complet du générateur d'applications
+│       └── INDEX.md                       - Ce fichier
 │
-├── 🛠️ Outils de Développement
-│   ├── create-plugin.sh               - Script shell pour générer des plugins
-│   ├── Makefile                       - Raccourcis make pour la génération
-│   └── package-headers.sh             - Script de packaging des headers
+├── 🛠️ Scripts Python (Cross-platform)
+│   └── tools/
+│       ├── create-plugin.py               - Générateur de plugins (Python 3.6+)
+│       ├── create-application.py          - Générateur d'applications (Python 3.6+)
+│       └── package-application.py         - Outil de packaging (Python 3.6+)
 │
-├── 📦 Système de Packaging
-│   ├── MCFPackaging.cmake             - Fonctions de packaging d'applications
-│   ├── ModularCppFrameworkConfig.cmake.in        - Config pour find_package()
-│   └── ModularCppFrameworkConfigVersion.cmake.in - Version sémantique
-│
-├── 🔧 Générateur de Plugins
-│   ├── MCFPluginGenerator.cmake       - Fonctions CMake de génération
-│   └── templates/                     - Templates de génération
-│       ├── Plugin.cpp.in              - Template code source
-│       ├── PluginCMakeLists.txt.in    - Template CMakeLists.txt
-│       └── PluginREADME.md.in         - Template README
-│
-└── 📚 Exemples
-    └── examples/
-        ├── README.md                  - Documentation des exemples
-        └── generate-plugin-example.cmake - Exemples de génération
+├── 🔧 Système CMake
+│   └── cmake/
+│       ├── MCFPluginGenerator.cmake       - Fonctions CMake pour plugins
+│       ├── MCFApplicationGenerator.cmake  - Fonctions CMake pour applications
+│       ├── MCFPackaging.cmake             - Fonctions de packaging
+│       └── templates/                     - Templates de génération
+│           ├── Plugin.cpp.in              - Template plugin source
+│           ├── PluginCMakeLists.txt.in    - Template plugin CMakeLists
+│           ├── PluginREADME.md.in         - Template plugin README
+│           ├── Application_*.in           - Templates application
+│           └── ...
 ```
 
 ## 📖 Guides de Documentation
@@ -69,16 +67,22 @@ cmake/
 
 | Outil | Type | Usage | Documentation |
 |-------|------|-------|---------------|
-| `create-plugin.sh` | Shell Script | `./cmake/create-plugin.sh -n MyPlugin -r` | [QUICKSTART.md](QUICKSTART.md) |
-| `Makefile` | Make Targets | `make -f cmake/Makefile plugin-realtime NAME=MyPlugin` | [PLUGIN_GENERATOR.md](PLUGIN_GENERATOR.md) |
+| `create-plugin.py` | Python Script (Cross-platform) | `python3 tools/create-plugin.py -n MyPlugin -r` | [QUICKSTART.md](QUICKSTART.md) |
 | `MCFPluginGenerator.cmake` | CMake Functions | `mcf_generate_plugin(NAME MyPlugin REALTIME)` | [PLUGIN_GENERATOR.md](PLUGIN_GENERATOR.md) |
+
+### Générateur d'Applications
+
+| Outil | Type | Usage | Documentation |
+|-------|------|-------|---------------|
+| `create-application.py` | Python Script (Cross-platform) | `python3 tools/create-application.py -n MyApp -r` | [QUICKSTART.md](QUICKSTART.md) |
+| `MCFApplicationGenerator.cmake` | CMake Functions | `mcf_generate_application(NAME MyApp REALTIME)` | [APPLICATION_GENERATOR.md](APPLICATION_GENERATOR.md) |
 
 ### Packaging
 
 | Outil | Type | Usage | Documentation |
 |-------|------|-------|---------------|
+| `package-application.py` | Python Script (Cross-platform) | `python3 tools/package-application.py -t package-my_app` | [README.md](README.md) |
 | `MCFPackaging.cmake` | CMake Functions | `mcf_package_application(...)` | [README.md](README.md) |
-| `package-headers.sh` | Shell Script | Packaging des headers | [README.md](README.md) |
 
 ## 📦 Templates Disponibles
 
@@ -94,14 +98,13 @@ Situés dans `templates/`, utilisés par le générateur de plugins:
 
 ### Créer un Nouveau Plugin
 
-**Débutant:**
+**Débutant (Cross-platform):**
 ```bash
-./cmake/create-plugin.sh -n MyPlugin
-```
+# Linux/macOS
+python3 tools/create-plugin.py -n MyPlugin
 
-**Utilisateur Make:**
-```bash
-make -f cmake/Makefile plugin-realtime NAME=PhysicsEngine
+# Windows
+python tools/create-plugin.py -n MyPlugin
 ```
 
 **Expert CMake:**
@@ -124,16 +127,21 @@ mcf_package_application(
 )
 ```
 
-### Générer Plusieurs Plugins
+### Créer une Nouvelle Application
 
-**Via Makefile:**
+**Débutant (Cross-platform):**
 ```bash
-make -f cmake/Makefile examples
+# Linux/macOS
+python3 tools/create-application.py -n MyApp -r -c
+
+# Windows
+python tools/create-application.py -n MyApp -r -c
 ```
 
-**Via CMake:**
-```bash
-cmake -P cmake/examples/generate-plugin-example.cmake
+**Expert CMake:**
+```cmake
+include(cmake/MCFApplicationGenerator.cmake)
+mcf_generate_application(NAME MyApp REALTIME CONFIG)
 ```
 
 ## 📊 Statistiques
@@ -153,14 +161,15 @@ cmake -P cmake/examples/generate-plugin-example.cmake
 
 ## ⚡ Actions Rapides
 
-| Je veux... | Commande |
-|-----------|----------|
-| Créer un plugin basique | `./cmake/create-plugin.sh -n MyPlugin` |
-| Créer un plugin realtime | `./cmake/create-plugin.sh -n MyPlugin -r` |
-| Créer un plugin event-driven | `./cmake/create-plugin.sh -n MyPlugin -e` |
-| Créer un plugin complet | `./cmake/create-plugin.sh -n MyPlugin -r -e` |
-| Voir les options | `./cmake/create-plugin.sh --help` |
-| Voir les exemples | `make -f cmake/Makefile help` |
+| Je veux... | Commande (Linux/macOS) | Commande (Windows) |
+|-----------|----------------------|-------------------|
+| Créer un plugin basique | `python3 tools/create-plugin.py -n MyPlugin` | `python tools/create-plugin.py -n MyPlugin` |
+| Créer un plugin realtime | `python3 tools/create-plugin.py -n MyPlugin -r` | `python tools/create-plugin.py -n MyPlugin -r` |
+| Créer un plugin event-driven | `python3 tools/create-plugin.py -n MyPlugin -e` | `python tools/create-plugin.py -n MyPlugin -e` |
+| Créer un plugin complet | `python3 tools/create-plugin.py -n MyPlugin -r -e` | `python tools/create-plugin.py -n MyPlugin -r -e` |
+| Créer une application | `python3 tools/create-application.py -n MyApp` | `python tools/create-application.py -n MyApp` |
+| Packager une application | `python3 tools/package-application.py -t package-my_app` | `python tools/package-application.py -t package-my_app` |
+| Voir les options | `python3 tools/create-plugin.py --help` | `python tools/create-plugin.py --help` |
 
 ## 📝 Notes de Version
 

@@ -182,34 +182,34 @@ public:
 };
 
 // ============================================
-// create-plugin.sh Tests
+// create-plugin.py Tests
 // ============================================
 
-TEST_CASE("create-plugin.sh - Help option works", "[tools][create-plugin]") {
+TEST_CASE("create-plugin.py - Help option works", "[tools][create-plugin]") {
     ToolsTestFixture fixture;
 
-    std::string script = fixture.getScriptPath("create-plugin.sh");
+    std::string script = fixture.getScriptPath("create-plugin.py");
     REQUIRE(fixture.fs.exists(script));
 
-    auto result = ScriptExecutor::execute(script + " --help");
+    auto result = ScriptExecutor::execute("python3 " + script + " --help");
 
     REQUIRE(result.success());
-    REQUIRE(result.output.find("Usage:") != std::string::npos);
-    REQUIRE(result.output.find("Optional:") != std::string::npos);
+    REQUIRE(result.output.find("usage:") != std::string::npos);
+    REQUIRE(result.output.find("options:") != std::string::npos);
 }
 
-TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") {
+TEST_CASE("create-plugin.py - Basic plugin creation", "[tools][create-plugin]") {
     ToolsTestFixture fixture;
     fixture.SetUp();
 
-    std::string script = fixture.getScriptPath("create-plugin.sh");
+    std::string script = fixture.getScriptPath("create-plugin.py");
     std::string pluginDir = fixture.getTestPath("plugins/TestPlugin");
 
     // Create plugins directory
     fixture.fs.createDirectory(fixture.getTestPath("plugins"));
 
     SECTION("Create basic plugin") {
-        std::string cmd = script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d 'Test plugin' -o " + fixture.testDir + "/plugins";
+        std::string cmd = "python3 " + script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d 'Test plugin' -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
@@ -230,7 +230,7 @@ TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") 
     }
 
     SECTION("Create realtime plugin") {
-        std::string cmd = script + " -n RealtimePlugin -r -o " + fixture.testDir + "/plugins";
+        std::string cmd = "python3 " + script + " -n RealtimePlugin -r -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -242,7 +242,7 @@ TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") 
     }
 
     SECTION("Create event-driven plugin") {
-        std::string cmd = script + " -n EventPlugin -e -o " + fixture.testDir + "/plugins";
+        std::string cmd = "python3 " + script + " -n EventPlugin -e -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -253,7 +253,7 @@ TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") 
     }
 
     SECTION("Create full-featured plugin") {
-        std::string cmd = script + " -n FullPlugin -r -e -o " + fixture.testDir + "/plugins";
+        std::string cmd = "python3 " + script + " -n FullPlugin -r -e -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -267,19 +267,19 @@ TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") 
     fixture.TearDown();
 }
 
-TEST_CASE("create-plugin.sh - Error handling", "[tools][create-plugin]") {
+TEST_CASE("create-plugin.py - Error handling", "[tools][create-plugin]") {
     ToolsTestFixture fixture;
     fixture.SetUp();
 
-    std::string script = fixture.getScriptPath("create-plugin.sh");
+    std::string script = fixture.getScriptPath("create-plugin.py");
 
     SECTION("Missing required argument") {
-        auto result = ScriptExecutor::execute(script);
+        auto result = ScriptExecutor::execute("python3 " + script);
         REQUIRE_FALSE(result.success());
     }
 
     SECTION("Invalid priority value") {
-        std::string cmd = script + " -n TestPlugin -p " + fixture.testDir + " --priority invalid";
+        std::string cmd = "python3 " + script + " -n TestPlugin -p " + fixture.testDir + " --priority invalid";
         auto result = ScriptExecutor::execute(cmd);
         // Should either fail or use default priority
         // Implementation-dependent behavior
@@ -289,31 +289,31 @@ TEST_CASE("create-plugin.sh - Error handling", "[tools][create-plugin]") {
 }
 
 // ============================================
-// create-application.sh Tests
+// create-application.py Tests
 // ============================================
 
-TEST_CASE("create-application.sh - Help option works", "[tools][create-application]") {
+TEST_CASE("create-application.py - Help option works", "[tools][create-application]") {
     ToolsTestFixture fixture;
 
-    std::string script = fixture.getScriptPath("create-application.sh");
+    std::string script = fixture.getScriptPath("create-application.py");
     REQUIRE(fixture.fs.exists(script));
 
-    auto result = ScriptExecutor::execute(script + " --help");
+    auto result = ScriptExecutor::execute("python3 " + script + " --help");
 
     REQUIRE(result.success());
-    REQUIRE(result.output.find("Usage:") != std::string::npos);
-    REQUIRE(result.output.find("Optional:") != std::string::npos);
+    REQUIRE(result.output.find("usage:") != std::string::npos);
+    REQUIRE(result.output.find("options:") != std::string::npos);
 }
 
-TEST_CASE("create-application.sh - Basic application creation", "[tools][create-application]") {
+TEST_CASE("create-application.py - Basic application creation", "[tools][create-application]") {
     ToolsTestFixture fixture;
     fixture.SetUp();
 
-    std::string script = fixture.getScriptPath("create-application.sh");
+    std::string script = fixture.getScriptPath("create-application.py");
     std::string appDir = fixture.getTestPath("TestApp");
 
     SECTION("Create basic application") {
-        std::string cmd = script + " -n TestApp -o " + appDir;
+        std::string cmd = "python3 " + script + " -n TestApp -o " + appDir;
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
@@ -333,7 +333,7 @@ TEST_CASE("create-application.sh - Basic application creation", "[tools][create-
     }
 
     SECTION("Create realtime application") {
-        std::string cmd = script + " -n RealtimeApp -r -o " + fixture.getTestPath("RealtimeApp");
+        std::string cmd = "python3 " + script + " -n RealtimeApp -r -o " + fixture.getTestPath("RealtimeApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -344,7 +344,7 @@ TEST_CASE("create-application.sh - Basic application creation", "[tools][create-
     }
 
     SECTION("Create application with config support") {
-        std::string cmd = script + " -n ConfigApp -c -o " + fixture.getTestPath("ConfigApp");
+        std::string cmd = "python3 " + script + " -n ConfigApp -c -o " + fixture.getTestPath("ConfigApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -354,7 +354,7 @@ TEST_CASE("create-application.sh - Basic application creation", "[tools][create-
     }
 
     SECTION("Create application with modules") {
-        std::string cmd = script + " -n ModuleApp -m logger,profiling -o " + fixture.getTestPath("ModuleApp");
+        std::string cmd = "python3 " + script + " -n ModuleApp -m logger,profiling -o " + fixture.getTestPath("ModuleApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
@@ -369,29 +369,29 @@ TEST_CASE("create-application.sh - Basic application creation", "[tools][create-
 }
 
 // ============================================
-// package-application.sh Tests
+// package-application.py Tests
 // ============================================
 
-TEST_CASE("package-application.sh - Help option works", "[tools][package]") {
+TEST_CASE("package-application.py - Help option works", "[tools][package]") {
     ToolsTestFixture fixture;
 
-    std::string script = fixture.getScriptPath("package-application.sh");
+    std::string script = fixture.getScriptPath("package-application.py");
     REQUIRE(fixture.fs.exists(script));
 
-    auto result = ScriptExecutor::execute(script + " --help");
+    auto result = ScriptExecutor::execute("python3 " + script + " --help");
 
     REQUIRE(result.success());
-    REQUIRE(result.output.find("Usage:") != std::string::npos);
-    REQUIRE(result.output.find("OPTIONS:") != std::string::npos);
+    REQUIRE(result.output.find("usage:") != std::string::npos);
+    REQUIRE(result.output.find("options:") != std::string::npos);
 }
 
-TEST_CASE("package-application.sh - Package MCF examples", "[tools][package][integration]") {
+TEST_CASE("package-application.py - Package MCF examples", "[tools][package][integration]") {
     ToolsTestFixture fixture;
 
-    std::string script = fixture.getScriptPath("package-application.sh");
+    std::string script = fixture.getScriptPath("package-application.py");
 
     SECTION("Package without extraction") {
-        std::string cmd = "cd " + fixture.projectRoot + " && " + script + " -t package-mcf-examples";
+        std::string cmd = "cd " + fixture.projectRoot + " && python3 " + script + " -t package-mcf-examples";
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
@@ -400,13 +400,13 @@ TEST_CASE("package-application.sh - Package MCF examples", "[tools][package][int
 
         REQUIRE(result.success());
 
-        // Check that package was created
+        // Check that package was created (could be .tar.gz or .zip depending on platform)
         std::string buildDir = Path::join(fixture.projectRoot, "build");
         auto files = fixture.fs.listDirectory(buildDir);
         bool foundPackage = false;
         for (const auto& file : files) {
             if (file.find("MCF-Examples") != std::string::npos &&
-                file.find(".tar.gz") != std::string::npos) {
+                (file.find(".tar.gz") != std::string::npos || file.find(".zip") != std::string::npos)) {
                 foundPackage = true;
                 break;
             }
@@ -415,16 +415,16 @@ TEST_CASE("package-application.sh - Package MCF examples", "[tools][package][int
     }
 }
 
-TEST_CASE("package-application.sh - Output directory option", "[tools][package]") {
+TEST_CASE("package-application.py - Output directory option", "[tools][package]") {
     ToolsTestFixture fixture;
     fixture.SetUp();
 
-    std::string script = fixture.getScriptPath("package-application.sh");
+    std::string script = fixture.getScriptPath("package-application.py");
     std::string outputDir = fixture.getTestPath("output");
     fixture.fs.createDirectory(outputDir);
 
     SECTION("Copy package to output directory") {
-        std::string cmd = "cd " + fixture.projectRoot + " && " + script +
+        std::string cmd = "cd " + fixture.projectRoot + " && python3 " + script +
                          " -t package-mcf-examples -o " + outputDir;
         auto result = ScriptExecutor::execute(cmd);
 
@@ -432,12 +432,12 @@ TEST_CASE("package-application.sh - Output directory option", "[tools][package]"
         INFO("Output: " << result.output);
 
         if (result.success()) {
-            // Check that package was copied
+            // Check that package was copied (could be .tar.gz or .zip)
             auto files = fixture.fs.listDirectory(outputDir);
             bool foundPackage = false;
             for (const auto& file : files) {
                 if (file.find("MCF-Examples") != std::string::npos &&
-                    file.find(".tar.gz") != std::string::npos) {
+                    (file.find(".tar.gz") != std::string::npos || file.find(".zip") != std::string::npos)) {
                     foundPackage = true;
                     break;
                 }
@@ -457,7 +457,7 @@ TEST_CASE("Tools Integration - Create plugin and verify buildable", "[tools][int
     ToolsTestFixture fixture;
     fixture.SetUp();
 
-    std::string pluginScript = fixture.getScriptPath("create-plugin.sh");
+    std::string pluginScript = fixture.getScriptPath("create-plugin.py");
     std::string pluginDir = fixture.getTestPath("plugins/IntegrationPlugin");
 
     // Create plugins directory
@@ -465,7 +465,7 @@ TEST_CASE("Tools Integration - Create plugin and verify buildable", "[tools][int
 
     SECTION("Create plugin and check CMake validity") {
         // Create plugin
-        std::string createCmd = pluginScript + " -n IntegrationPlugin -r -o " + fixture.testDir + "/plugins";
+        std::string createCmd = "python3 " + pluginScript + " -n IntegrationPlugin -r -o " + fixture.testDir + "/plugins";
         auto createResult = ScriptExecutor::execute(createCmd);
 
         REQUIRE(createResult.success());
@@ -485,11 +485,11 @@ TEST_CASE("Tools Integration - Create application and verify structure", "[tools
     ToolsTestFixture fixture;
     fixture.SetUp();
 
-    std::string appScript = fixture.getScriptPath("create-application.sh");
+    std::string appScript = fixture.getScriptPath("create-application.py");
     std::string appDir = fixture.getTestPath("IntegrationApp");
 
     SECTION("Create full-featured application") {
-        std::string createCmd = appScript + " -n IntegrationApp -r -e -c -m logger,profiling -o " + appDir;
+        std::string createCmd = "python3 " + appScript + " -n IntegrationApp -r -e -c -m logger,profiling -o " + appDir;
         auto createResult = ScriptExecutor::execute(createCmd);
 
         INFO("Command: " << createCmd);
@@ -521,18 +521,22 @@ TEST_CASE("Tools - Platform detection", "[tools][platform]") {
     SECTION("Detect current platform") {
         #ifdef _WIN32
             INFO("Running on Windows");
-            // Windows-specific checks
+            // Windows-specific checks - Python scripts should exist
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-plugin.py")));
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-application.py")));
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("package-application.py")));
         #elif __APPLE__
             INFO("Running on macOS");
-            // macOS-specific checks
+            // macOS-specific checks - Python scripts should exist
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-plugin.py")));
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-application.py")));
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("package-application.py")));
         #elif __linux__
             INFO("Running on Linux");
-            // Linux-specific checks
-
-            // Verify shell scripts are executable
-            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-plugin.sh")));
-            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-application.sh")));
-            REQUIRE(fixture.fs.exists(fixture.getScriptPath("package-application.sh")));
+            // Linux-specific checks - Python scripts should exist
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-plugin.py")));
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("create-application.py")));
+            REQUIRE(fixture.fs.exists(fixture.getScriptPath("package-application.py")));
         #endif
     }
 }
@@ -541,12 +545,12 @@ TEST_CASE("Tools - Script permissions", "[tools][platform]") {
     ToolsTestFixture fixture;
 
     #ifndef _WIN32
-    // On Unix-like systems, verify scripts are executable
+    // On Unix-like systems, verify Python scripts are executable
     SECTION("Check execute permissions") {
         std::vector<std::string> scripts = {
-            "create-plugin.sh",
-            "create-application.sh",
-            "package-application.sh"
+            "create-plugin.py",
+            "create-application.py",
+            "package-application.py"
         };
 
         for (const auto& script : scripts) {
