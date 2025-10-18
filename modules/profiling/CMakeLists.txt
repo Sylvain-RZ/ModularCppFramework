@@ -8,7 +8,8 @@ add_library(mcf_profiling_module STATIC
 )
 
 target_include_directories(mcf_profiling_module PUBLIC
-    ${CMAKE_SOURCE_DIR}
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(mcf_profiling_module PUBLIC

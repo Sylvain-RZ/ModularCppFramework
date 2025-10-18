@@ -7,9 +7,10 @@ add_library(mcf_networking_module STATIC
     TcpClient.cpp
 )
 
-# Include directories
+# Include directories (different for build vs install)
 target_include_directories(mcf_networking_module PUBLIC
-    ${CMAKE_SOURCE_DIR}
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
 )
 
 # Link dependencies
