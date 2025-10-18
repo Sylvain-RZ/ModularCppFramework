@@ -1,5 +1,6 @@
 # Build Output Directories
 build/
+bin/
 cmake-build-*/
 out/
 dist/
