@@ -18,6 +18,10 @@
 #include <thread>
 #include <chrono>
 
+#ifdef __APPLE__
+    #include <mach-o/dyld.h>  // For _NSGetExecutablePath
+#endif
+
 using namespace mcf;
 
 // Helper macros for exit status (must be defined before use)
@@ -235,7 +239,7 @@ TEST_CASE("create-plugin.py - Basic plugin creation", "[tools][create-plugin]") 
     fixture.fs.createDirectory(fixture.getTestPath("plugins"));
 
     SECTION("Create basic plugin") {
-        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d 'Test plugin' -o " + fixture.testDir + "/plugins";
+        std::string cmd = ScriptExecutor::getPythonExecutable() + " " + script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d \"Test plugin\" -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
