@@ -20,6 +20,14 @@
 
 using namespace mcf;
 
+// Helper macros for exit status (must be defined before use)
+#ifndef WIFEXITED
+    #define WIFEXITED(status) (((status) & 0x7f) == 0)
+#endif
+#ifndef WEXITSTATUS
+    #define WEXITSTATUS(status) (((status) >> 8) & 0xff)
+#endif
+
 /**
  * @brief Helper class for executing shell scripts and capturing output
  */
@@ -86,14 +94,6 @@ public:
             return ::getpid();
         #endif
     }
-
-    // Helper macros for exit status
-    #ifndef WIFEXITED
-        #define WIFEXITED(status) (((status) & 0x7f) == 0)
-    #endif
-    #ifndef WEXITSTATUS
-        #define WEXITSTATUS(status) (((status) >> 8) & 0xff)
-    #endif
 };
 
 /**
