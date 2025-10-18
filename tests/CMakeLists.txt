@@ -53,6 +53,55 @@ add_executable(test_filesystem
 target_link_libraries(test_filesystem PRIVATE mcf_core Catch2)
 add_test(NAME FileSystem COMMAND test_filesystem)
 
+# PluginLoader Unit Tests
+add_executable(test_plugin_loader
+    unit/test_plugin_loader.cpp
+)
+target_link_libraries(test_plugin_loader PRIVATE mcf_core Catch2)
+add_test(NAME PluginLoader COMMAND test_plugin_loader)
+
+# Application Unit Tests
+add_executable(test_application
+    unit/test_application.cpp
+)
+target_link_libraries(test_application PRIVATE mcf_core Catch2)
+add_test(NAME Application COMMAND test_application)
+
+# Module Unit Tests
+add_executable(test_module
+    unit/test_module.cpp
+)
+target_link_libraries(test_module PRIVATE mcf_core Catch2)
+add_test(NAME Module COMMAND test_module)
+
+# JsonParser Edge Cases Tests
+add_executable(test_json_parser_edge_cases
+    unit/test_json_parser_edge_cases.cpp
+)
+target_link_libraries(test_json_parser_edge_cases PRIVATE mcf_core Catch2)
+add_test(NAME JsonParserEdgeCases COMMAND test_json_parser_edge_cases)
+
+# LoggerModule Unit Tests
+add_executable(test_logger_module
+    unit/test_logger_module.cpp
+)
+target_link_libraries(test_logger_module PRIVATE mcf_core mcf_logger_module Catch2)
+add_test(NAME LoggerModule COMMAND test_logger_module)
+
+# Logger Edge Cases Tests
+add_executable(test_logger_edge_cases
+    unit/test_logger_edge_cases.cpp
+)
+target_link_libraries(test_logger_edge_cases PRIVATE mcf_core Catch2)
+add_test(NAME LoggerEdgeCases COMMAND test_logger_edge_cases)
+
+# EventBus Edge Cases Tests
+add_executable(test_eventbus_edge_cases
+    unit/test_eventbus_edge_cases.cpp
+)
+target_link_libraries(test_eventbus_edge_cases PRIVATE mcf_core Catch2)
+add_test(NAME EventBusEdgeCases COMMAND test_eventbus_edge_cases)
+
 # ============================================
 # Integration Tests
 # ============================================
@@ -71,6 +120,13 @@ add_test(NAME IntegrationTest_Basic COMMAND test_app)
 # target_link_libraries(test_hot_reload PRIVATE mcf_core Catch2)
 # add_test(NAME IntegrationTest_HotReload COMMAND test_hot_reload)
 
+# PluginManager Integration Test
+add_executable(test_plugin_manager
+    integration/test_plugin_manager.cpp
+)
+target_link_libraries(test_plugin_manager PRIVATE mcf_core Catch2)
+add_test(NAME IntegrationTest_PluginManager COMMAND test_plugin_manager)
+
 # Configuration System Test
 add_executable(test_config
     test_config.cpp
@@ -85,6 +141,41 @@ add_executable(test_logger
 target_link_libraries(test_logger PRIVATE mcf_core mcf_logger_module)
 add_test(NAME IntegrationTest_Logger COMMAND test_logger)
 
+# Hot Reload Real Plugin Test (some sections commented - uses only implemented features)
+add_executable(test_hot_reload_real_plugin
+    integration/test_hot_reload_real_plugin.cpp
+)
+target_link_libraries(test_hot_reload_real_plugin PRIVATE mcf_core Catch2)
+add_test(NAME IntegrationTest_HotReloadReal COMMAND test_hot_reload_real_plugin)
+
+# Plugin Communication Test
+add_executable(test_plugin_communication
+    integration/test_plugin_communication.cpp
+)
+target_link_libraries(test_plugin_communication PRIVATE mcf_core Catch2)
+add_test(NAME IntegrationTest_PluginCommunication COMMAND test_plugin_communication)
+
+# Config Hot Reload Test (file watching sections commented - tests implemented features only)
+add_executable(test_config_hot_reload
+    integration/test_config_hot_reload.cpp
+)
+target_link_libraries(test_config_hot_reload PRIVATE mcf_core Catch2)
+add_test(NAME IntegrationTest_ConfigHotReload COMMAND test_config_hot_reload)
+
+# Stress Test (API corrected - tests implemented features only)
+add_executable(test_stress
+    integration/test_stress.cpp
+)
+target_link_libraries(test_stress PRIVATE mcf_core Catch2)
+add_test(NAME IntegrationTest_Stress COMMAND test_stress)
+
+# Error Recovery Test (crash test commented - tests implemented features only)
+add_executable(test_error_recovery
+    integration/test_error_recovery.cpp
+)
+target_link_libraries(test_error_recovery PRIVATE mcf_core Catch2)
+add_test(NAME IntegrationTest_ErrorRecovery COMMAND test_error_recovery)
+
 # ============================================
 # Test Output Configuration
 # ============================================
@@ -98,10 +189,22 @@ set_target_properties(
     test_file_watcher
     test_thread_pool
     test_filesystem
+    test_plugin_loader
+    test_application
+    test_module
+    test_json_parser_edge_cases
+    test_logger_module
+    test_logger_edge_cases
+    test_eventbus_edge_cases
     test_app
-    # test_hot_reload
+    test_plugin_manager
     test_config
     test_logger
+    test_hot_reload_real_plugin
+    test_plugin_communication
+    test_config_hot_reload
+    test_stress
+    test_error_recovery
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests
 )
@@ -112,7 +215,7 @@ set_target_properties(
 
 # Run all unit tests
 add_custom_target(unit_tests
-    COMMAND ${CMAKE_CTEST_COMMAND} -R "EventBus|ServiceLocator|ResourceManager|DependencyResolver|FileWatcher|ThreadPool|FileSystem" --exclude-regex Integration
+    COMMAND ${CMAKE_CTEST_COMMAND} -R "EventBus|ServiceLocator|ResourceManager|DependencyResolver|FileWatcher|ThreadPool|FileSystem|PluginLoader|Application|Module|JsonParserEdgeCases|LoggerModule|LoggerEdgeCases|EventBusEdgeCases" --exclude-regex Integration
     DEPENDS test_eventbus
             test_service_locator
             test_resource_manager
@@ -120,6 +223,13 @@ add_custom_target(unit_tests
             test_file_watcher
             test_thread_pool
             test_filesystem
+            test_plugin_loader
+            test_application
+            test_module
+            test_json_parser_edge_cases
+            test_logger_module
+            test_logger_edge_cases
+            test_eventbus_edge_cases
     COMMENT "Running unit tests..."
 )
 
@@ -164,6 +274,14 @@ add_custom_target(hot_reload_tests
 # Run integration tests
 add_custom_target(integration_tests
     COMMAND ${CMAKE_CTEST_COMMAND} -R IntegrationTest
-    DEPENDS test_app test_config test_logger  # test_hot_reload
+    DEPENDS test_app
+            test_plugin_manager
+            test_config
+            test_logger
+            test_hot_reload_real_plugin
+            test_plugin_communication
+            test_config_hot_reload
+            test_stress
+            test_error_recovery
     COMMENT "Running integration tests..."
 )

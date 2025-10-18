@@ -372,6 +372,17 @@ public:
     ConfigurationManager* getConfigurationManager() { return m_configManager.get(); }
 
     /**
+     * @brief Get thread pool
+     *
+     * The ThreadPool handles asynchronous task execution with a pool of worker threads.
+     *
+     * @return Pointer to the ThreadPool instance. Never null after construction.
+     *
+     * @see ThreadPool
+     */
+    ThreadPool* getThreadPool() { return m_threadPool.get(); }
+
+    /**
      * @brief Get plugin manager
      *
      * The PluginManager handles dynamic loading, initialization, and lifecycle
