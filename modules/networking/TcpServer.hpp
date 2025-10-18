@@ -121,11 +121,11 @@ public:
     explicit TcpServer(const NetworkConfig& config = NetworkConfig());
     ~TcpServer();
 
-    // Disable copy, allow move
+    // Disable copy and move (contains std::atomic which is not moveable)
     TcpServer(const TcpServer&) = delete;
     TcpServer& operator=(const TcpServer&) = delete;
-    TcpServer(TcpServer&&) noexcept = default;
-    TcpServer& operator=(TcpServer&&) noexcept = default;
+    TcpServer(TcpServer&&) noexcept = delete;
+    TcpServer& operator=(TcpServer&&) noexcept = delete;
 
     // Server lifecycle
     bool start();

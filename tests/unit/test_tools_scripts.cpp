@@ -79,8 +79,8 @@ public:
         std::string outFile = tempDir + "mcf_test_out_" + std::to_string(getpid()) + ".txt";
         std::string errFile = tempDir + "mcf_test_err_" + std::to_string(getpid()) + ".txt";
 
-        // Execute command with output redirection
-        std::string fullCommand = command + " > " + outFile + " 2> " + errFile;
+        // Execute command with output redirection (quote paths for Windows compatibility)
+        std::string fullCommand = command + " > \"" + outFile + "\" 2> \"" + errFile + "\"";
         result.exitCode = system(fullCommand.c_str());
 
         // Convert to actual exit code (system() returns status << 8)
