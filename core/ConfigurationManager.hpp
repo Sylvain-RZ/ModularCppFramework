@@ -201,7 +201,12 @@ public:
         // Ensure directory exists
         std::filesystem::path filePath(savePath);
         if (filePath.has_parent_path()) {
-            std::filesystem::create_directories(filePath.parent_path());
+            try {
+                std::filesystem::create_directories(filePath.parent_path());
+            } catch (const std::filesystem::filesystem_error&) {
+                // Failed to create directory (e.g., path is a file or invalid)
+                return false;
+            }
         }
 
         bool success = JsonParser::writeFile(savePath, m_config);
