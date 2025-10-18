@@ -1,6 +1,15 @@
 #ifndef MCF_TCP_SERVER_HPP
 #define MCF_TCP_SERVER_HPP
 
+// Include winsock2 BEFORE any other headers on Windows to avoid conflicts
+#ifdef _WIN32
+    #ifndef _WINSOCKAPI_
+        #define _WINSOCKAPI_  // Prevent windows.h from including winsock.h
+    #endif
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+#endif
+
 #include "modules/networking/NetworkingTypes.hpp"
 #include "modules/networking/NetworkConfig.hpp"
 #include "modules/networking/TcpClient.hpp"
@@ -12,8 +21,6 @@
 #include <map>
 
 #ifdef _WIN32
-    #include <winsock2.h>
-    #include <ws2tcpip.h>
     using socket_t = SOCKET;
     #define INVALID_SOCKET_VALUE INVALID_SOCKET
     #define SOCKET_ERROR_VALUE SOCKET_ERROR

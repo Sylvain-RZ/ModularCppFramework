@@ -37,7 +37,11 @@ bool ProfilingModule::initialize(Application& app) {
             std::cout << "[ProfilingModule] Export path: " << m_config.exportPath << "\n";
 
             // Create export directory if it doesn't exist
+#ifdef _WIN32
+            mkdir(m_config.exportPath.c_str());
+#else
             mkdir(m_config.exportPath.c_str(), 0755);
+#endif
         }
     } else {
         std::cout << "[ProfilingModule] Profiling DISABLED (zero overhead)\n";
