@@ -174,30 +174,32 @@ TEST_CASE("Logger - Concurrent logging from multiple threads", "[Logger][EdgeCas
         const std::string filepath = "test_logs/thread_file.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("thread_file");
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
+        {
+            auto logger = createLogger("thread_file");
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
 
-        const int numThreads = 5;
-        const int messagesPerThread = 50;
+            const int numThreads = 5;
+            const int messagesPerThread = 50;
 
-        std::vector<std::thread> threads;
-        for (int t = 0; t < numThreads; t++) {
-            threads.emplace_back([&logger, t, messagesPerThread]() {
-                for (int i = 0; i < messagesPerThread; i++) {
-                    logger->info("Thread " + std::to_string(t) + " message " + std::to_string(i));
-                }
-            });
-        }
+            std::vector<std::thread> threads;
+            for (int t = 0; t < numThreads; t++) {
+                threads.emplace_back([&logger, t, messagesPerThread]() {
+                    for (int i = 0; i < messagesPerThread; i++) {
+                        logger->info("Thread " + std::to_string(t) + " message " + std::to_string(i));
+                    }
+                });
+            }
 
-        for (auto& thread : threads) {
-            thread.join();
-        }
+            for (auto& thread : threads) {
+                thread.join();
+            }
 
-        logger->flush();
+            logger->flush();
 
-        // Verify all messages were written
-        size_t lineCount = countLines(filepath);
-        REQUIRE(lineCount >= numThreads * messagesPerThread);
+            // Verify all messages were written
+            size_t lineCount = countLines(filepath);
+            REQUIRE(lineCount >= numThreads * messagesPerThread);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -208,30 +210,32 @@ TEST_CASE("Logger - Concurrent logging from multiple threads", "[Logger][EdgeCas
         const std::string filepath = "test_logs/thread_multi.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("thread_multi");
-        logger->addSink(std::make_shared<ConsoleSink>(false, LogLevel::Debug));
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
+        {
+            auto logger = createLogger("thread_multi");
+            logger->addSink(std::make_shared<ConsoleSink>(false, LogLevel::Debug));
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
 
-        const int numThreads = 4;
-        const int messagesPerThread = 25;
+            const int numThreads = 4;
+            const int messagesPerThread = 25;
 
-        std::vector<std::thread> threads;
-        for (int t = 0; t < numThreads; t++) {
-            threads.emplace_back([&logger, t, messagesPerThread]() {
-                for (int i = 0; i < messagesPerThread; i++) {
-                    logger->info("Multi-sink thread " + std::to_string(t) + " msg " + std::to_string(i));
-                }
-            });
-        }
+            std::vector<std::thread> threads;
+            for (int t = 0; t < numThreads; t++) {
+                threads.emplace_back([&logger, t, messagesPerThread]() {
+                    for (int i = 0; i < messagesPerThread; i++) {
+                        logger->info("Multi-sink thread " + std::to_string(t) + " msg " + std::to_string(i));
+                    }
+                });
+            }
 
-        for (auto& thread : threads) {
-            thread.join();
-        }
+            for (auto& thread : threads) {
+                thread.join();
+            }
 
-        logger->flush();
+            logger->flush();
 
-        size_t lineCount = countLines(filepath);
-        REQUIRE(lineCount >= numThreads * messagesPerThread);
+            size_t lineCount = countLines(filepath);
+            REQUIRE(lineCount >= numThreads * messagesPerThread);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -246,18 +250,20 @@ TEST_CASE("Logger - File rotation edge cases", "[Logger][EdgeCases]") {
         std::filesystem::remove(filepath);
         std::filesystem::remove(filepath + ".1");
 
-        auto logger = createLogger("rotate_1");
-        logger->addSink(std::make_shared<RotatingFileSink>(filepath, 200, 1, LogLevel::Debug));
+        {
+            auto logger = createLogger("rotate_1");
+            logger->addSink(std::make_shared<RotatingFileSink>(filepath, 200, 1, LogLevel::Debug));
 
-        for (int i = 0; i < 50; i++) {
-            logger->info("Message " + std::to_string(i) + " padding text here");
-        }
-        logger->flush();
+            for (int i = 0; i < 50; i++) {
+                logger->info("Message " + std::to_string(i) + " padding text here");
+            }
+            logger->flush();
 
-        // Should have main file and .1 backup only
-        REQUIRE(std::filesystem::exists(filepath));
-        REQUIRE(std::filesystem::exists(filepath + ".1"));
-        REQUIRE_FALSE(std::filesystem::exists(filepath + ".2"));
+            // Should have main file and .1 backup only
+            REQUIRE(std::filesystem::exists(filepath));
+            REQUIRE(std::filesystem::exists(filepath + ".1"));
+            REQUIRE_FALSE(std::filesystem::exists(filepath + ".2"));
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove(filepath + ".1");
@@ -272,17 +278,19 @@ TEST_CASE("Logger - File rotation edge cases", "[Logger][EdgeCases]") {
             std::filesystem::remove(filepath + (i == 0 ? "" : "." + std::to_string(i)));
         }
 
-        auto logger = createLogger("rotate_5");
-        logger->addSink(std::make_shared<RotatingFileSink>(filepath, 200, 5, LogLevel::Debug));
+        {
+            auto logger = createLogger("rotate_5");
+            logger->addSink(std::make_shared<RotatingFileSink>(filepath, 200, 5, LogLevel::Debug));
 
-        for (int i = 0; i < 100; i++) {
-            logger->info("Message " + std::to_string(i) + " with padding text to trigger rotation");
-        }
-        logger->flush();
+            for (int i = 0; i < 100; i++) {
+                logger->info("Message " + std::to_string(i) + " with padding text to trigger rotation");
+            }
+            logger->flush();
 
-        // Should have main file and up to 5 backups
-        REQUIRE(std::filesystem::exists(filepath));
-        REQUIRE_FALSE(std::filesystem::exists(filepath + ".6"));
+            // Should have main file and up to 5 backups
+            REQUIRE(std::filesystem::exists(filepath));
+            REQUIRE_FALSE(std::filesystem::exists(filepath + ".6"));
+        } // Logger destroyed here, files closed
 
         for (int i = 0; i <= 5; i++) {
             std::filesystem::remove(filepath + (i == 0 ? "" : "." + std::to_string(i)));
@@ -297,13 +305,15 @@ TEST_CASE("Logger - File rotation edge cases", "[Logger][EdgeCases]") {
         std::filesystem::remove(filepath);
         std::filesystem::remove(filepath + ".1");
 
-        auto logger = createLogger("small_size");
-        logger->addSink(std::make_shared<RotatingFileSink>(filepath, 50, 2, LogLevel::Debug)); // Very small
+        {
+            auto logger = createLogger("small_size");
+            logger->addSink(std::make_shared<RotatingFileSink>(filepath, 50, 2, LogLevel::Debug)); // Very small
 
-        logger->info("This message is longer than 50 bytes and should trigger rotation");
-        logger->flush();
+            logger->info("This message is longer than 50 bytes and should trigger rotation");
+            logger->flush();
 
-        REQUIRE(std::filesystem::exists(filepath));
+            REQUIRE(std::filesystem::exists(filepath));
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove(filepath + ".1");
@@ -318,21 +328,23 @@ TEST_CASE("Logger - File rotation edge cases", "[Logger][EdgeCases]") {
         std::filesystem::remove(filepath);
         std::filesystem::remove(filepath + ".1");
 
-        auto logger = createLogger("preserve");
-        logger->addSink(std::make_shared<RotatingFileSink>(filepath, 300, 2, LogLevel::Debug));
+        {
+            auto logger = createLogger("preserve");
+            logger->addSink(std::make_shared<RotatingFileSink>(filepath, 300, 2, LogLevel::Debug));
 
-        logger->info("First batch message 1");
-        logger->info("First batch message 2");
-        logger->flush();
+            logger->info("First batch message 1");
+            logger->info("First batch message 2");
+            logger->flush();
 
-        // Trigger rotation by writing many more messages
-        for (int i = 0; i < 50; i++) {
-            logger->info("Rotation trigger message " + std::to_string(i) + " with padding");
-        }
-        logger->flush();
+            // Trigger rotation by writing many more messages
+            for (int i = 0; i < 50; i++) {
+                logger->info("Rotation trigger message " + std::to_string(i) + " with padding");
+            }
+            logger->flush();
 
-        // Check that a backup file was created (rotation occurred)
-        REQUIRE(std::filesystem::exists(filepath + ".1"));
+            // Check that a backup file was created (rotation occurred)
+            REQUIRE(std::filesystem::exists(filepath + ".1"));
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove(filepath + ".1");
@@ -364,19 +376,21 @@ TEST_CASE("Logger - Formatting edge cases", "[Logger][EdgeCases]") {
         const std::string filepath = "test_logs/special_chars.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("special_chars");
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
+        {
+            auto logger = createLogger("special_chars");
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
 
-        logger->info("Message with newline\n");
-        logger->info("Message with tab\t");
-        logger->info("Message with quotes \"\"");
-        logger->info("Message with backslash \\");
-        logger->flush();
+            logger->info("Message with newline\n");
+            logger->info("Message with tab\t");
+            logger->info("Message with quotes \"\"");
+            logger->info("Message with backslash \\");
+            logger->flush();
 
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("newline") != std::string::npos);
-        REQUIRE(content.find("tab") != std::string::npos);
-        REQUIRE(content.find("quotes") != std::string::npos);
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("newline") != std::string::npos);
+            REQUIRE(content.find("tab") != std::string::npos);
+            REQUIRE(content.find("quotes") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -387,14 +401,16 @@ TEST_CASE("Logger - Formatting edge cases", "[Logger][EdgeCases]") {
         const std::string filepath = "test_logs/unicode.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("unicode");
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
+        {
+            auto logger = createLogger("unicode");
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
 
-        logger->info("Unicode: café, naïve, 日本語, émoji 🚀");
-        logger->flush();
+            logger->info("Unicode: café, naïve, 日本語, émoji 🚀");
+            logger->flush();
 
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("café") != std::string::npos);
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("café") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -405,24 +421,26 @@ TEST_CASE("Logger - Formatting edge cases", "[Logger][EdgeCases]") {
         const std::string filepath = "test_logs/all_levels.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("all_levels", LogLevel::Trace);
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Trace));
+        {
+            auto logger = createLogger("all_levels", LogLevel::Trace);
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Trace));
 
-        logger->trace("Trace message");
-        logger->debug("Debug message");
-        logger->info("Info message");
-        logger->warning("Warn message");
-        logger->error("Error message");
-        logger->critical("Critical message");
-        logger->flush();
+            logger->trace("Trace message");
+            logger->debug("Debug message");
+            logger->info("Info message");
+            logger->warning("Warn message");
+            logger->error("Error message");
+            logger->critical("Critical message");
+            logger->flush();
 
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("TRACE") != std::string::npos);
-        REQUIRE(content.find("DEBUG") != std::string::npos);
-        REQUIRE(content.find("INFO") != std::string::npos);
-        REQUIRE(content.find("WARN") != std::string::npos);
-        REQUIRE(content.find("ERROR") != std::string::npos);
-        REQUIRE(content.find("CRIT") != std::string::npos); // Critical is logged as "CRIT"
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("TRACE") != std::string::npos);
+            REQUIRE(content.find("DEBUG") != std::string::npos);
+            REQUIRE(content.find("INFO") != std::string::npos);
+            REQUIRE(content.find("WARN") != std::string::npos);
+            REQUIRE(content.find("ERROR") != std::string::npos);
+            REQUIRE(content.find("CRIT") != std::string::npos); // Critical is logged as "CRIT"
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -435,19 +453,21 @@ TEST_CASE("Logger - Level filtering", "[Logger][EdgeCases]") {
         const std::string filepath = "test_logs/filter.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("filter", LogLevel::Warning); // Only warn and above
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Trace)); // Sink accepts all
+        {
+            auto logger = createLogger("filter", LogLevel::Warning); // Only warn and above
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Trace)); // Sink accepts all
 
-        logger->trace("Should not appear");
-        logger->debug("Should not appear");
-        logger->info("Should not appear");
-        logger->warning("Should appear");
-        logger->error("Should appear");
-        logger->flush();
+            logger->trace("Should not appear");
+            logger->debug("Should not appear");
+            logger->info("Should not appear");
+            logger->warning("Should appear");
+            logger->error("Should appear");
+            logger->flush();
 
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("Should not appear") == std::string::npos);
-        REQUIRE(content.find("Should appear") != std::string::npos);
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("Should not appear") == std::string::npos);
+            REQUIRE(content.find("Should appear") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -458,19 +478,21 @@ TEST_CASE("Logger - Level filtering", "[Logger][EdgeCases]") {
         const std::string filepath = "test_logs/sink_filter.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("sink_filter", LogLevel::Trace); // Logger accepts all
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Error)); // Sink only accepts error+
+        {
+            auto logger = createLogger("sink_filter", LogLevel::Trace); // Logger accepts all
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Error)); // Sink only accepts error+
 
-        logger->trace("Should not appear");
-        logger->info("Should not appear");
-        logger->warning("Should not appear");
-        logger->error("Should appear");
-        logger->critical("Should appear");
-        logger->flush();
+            logger->trace("Should not appear");
+            logger->info("Should not appear");
+            logger->warning("Should not appear");
+            logger->error("Should appear");
+            logger->critical("Should appear");
+            logger->flush();
 
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("Should not appear") == std::string::npos);
-        REQUIRE(content.find("Should appear") != std::string::npos);
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("Should not appear") == std::string::npos);
+            REQUIRE(content.find("Should appear") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -483,28 +505,30 @@ TEST_CASE("Logger - Level filtering", "[Logger][EdgeCases]") {
         std::filesystem::remove(filepath1);
         std::filesystem::remove(filepath2);
 
-        auto logger = createLogger("multi_level", LogLevel::Trace);
-        logger->addSink(std::make_shared<FileSink>(filepath1, true, LogLevel::Debug));
-        logger->addSink(std::make_shared<FileSink>(filepath2, true, LogLevel::Error));
+        {
+            auto logger = createLogger("multi_level", LogLevel::Trace);
+            logger->addSink(std::make_shared<FileSink>(filepath1, true, LogLevel::Debug));
+            logger->addSink(std::make_shared<FileSink>(filepath2, true, LogLevel::Error));
 
-        logger->trace("Trace");
-        logger->debug("Debug");
-        logger->info("Info");
-        logger->error("Error");
-        logger->flush();
+            logger->trace("Trace");
+            logger->debug("Debug");
+            logger->info("Info");
+            logger->error("Error");
+            logger->flush();
 
-        std::string content1 = readFile(filepath1);
-        std::string content2 = readFile(filepath2);
+            std::string content1 = readFile(filepath1);
+            std::string content2 = readFile(filepath2);
 
-        // File 1 should have debug and above
-        REQUIRE(content1.find("Trace") == std::string::npos);
-        REQUIRE(content1.find("Debug") != std::string::npos);
-        REQUIRE(content1.find("Error") != std::string::npos);
+            // File 1 should have debug and above
+            REQUIRE(content1.find("Trace") == std::string::npos);
+            REQUIRE(content1.find("Debug") != std::string::npos);
+            REQUIRE(content1.find("Error") != std::string::npos);
 
-        // File 2 should only have error
-        REQUIRE(content2.find("Debug") == std::string::npos);
-        REQUIRE(content2.find("Info") == std::string::npos);
-        REQUIRE(content2.find("Error") != std::string::npos);
+            // File 2 should only have error
+            REQUIRE(content2.find("Debug") == std::string::npos);
+            REQUIRE(content2.find("Info") == std::string::npos);
+            REQUIRE(content2.find("Error") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath1);
         std::filesystem::remove(filepath2);
@@ -548,17 +572,19 @@ TEST_CASE("Logger - Flush behavior", "[Logger][EdgeCases]") {
         const std::string filepath = "test_logs/flush_test.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("flush_test");
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
+        {
+            auto logger = createLogger("flush_test");
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
 
-        logger->info("Before flush");
+            logger->info("Before flush");
 
-        // Without flush, data might not be written yet
-        logger->flush();
+            // Without flush, data might not be written yet
+            logger->flush();
 
-        // Now it should definitely be written
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("Before flush") != std::string::npos);
+            // Now it should definitely be written
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("Before flush") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -569,18 +595,20 @@ TEST_CASE("Logger - Flush behavior", "[Logger][EdgeCases]") {
         const std::string filepath = "test_logs/multi_flush.log";
         std::filesystem::remove(filepath);
 
-        auto logger = createLogger("multi_flush");
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
+        {
+            auto logger = createLogger("multi_flush");
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
 
-        logger->info("Message 1");
-        logger->flush();
-        logger->info("Message 2");
-        logger->flush();
-        logger->info("Message 3");
-        logger->flush();
+            logger->info("Message 1");
+            logger->flush();
+            logger->info("Message 2");
+            logger->flush();
+            logger->info("Message 3");
+            logger->flush();
 
-        size_t lineCount = countLines(filepath);
-        REQUIRE(lineCount >= 3);
+            size_t lineCount = countLines(filepath);
+            REQUIRE(lineCount >= 3);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
