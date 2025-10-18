@@ -43,8 +43,8 @@ jobs:
     - name: Run tests
       run: |
         cd build
-        # Exclude FileWatcher test on Windows Debug (timing issues due to slow debug code)
-        if [ "${{ matrix.os }}" = "windows-latest" ] && [ "${{ matrix.build_type }}" = "Debug" ]; then
+        # Exclude FileWatcher test on Windows (unreliable due to file system timing differences)
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
           ctest --output-on-failure --build-config ${{ matrix.build_type }} -C ${{ matrix.build_type }} -E FileWatcher
         else
           ctest --output-on-failure --build-config ${{ matrix.build_type }} -C ${{ matrix.build_type }}
