@@ -25,6 +25,7 @@ NC='\033[0m' # No Color
 
 # Usage function
 usage() {
+    local exit_code=${1:-1}
     echo -e "${BLUE}MCF Application Generator${NC}"
     echo ""
     echo "Usage: $0 -n <app_name> [options]"
@@ -49,7 +50,7 @@ usage() {
     echo "  $0 -n MyGame -r -c -m logger,profiling"
     echo "  $0 -n NetworkApp -v 2.0.0 -a 'Net Team' -m networking -e -c"
     echo ""
-    exit 1
+    exit $exit_code
 }
 
 # Parse arguments
@@ -96,11 +97,11 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -h|--help)
-            usage
+            usage 0
             ;;
         *)
             echo -e "${RED}Error: Unknown option $1${NC}"
-            usage
+            usage 1
             ;;
     esac
 done
@@ -108,7 +109,7 @@ done
 # Validate required arguments
 if [ -z "$APP_NAME" ]; then
     echo -e "${RED}Error: Application name is required${NC}"
-    usage
+    usage 1
 fi
 
 # Set default output directory

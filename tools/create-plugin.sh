@@ -12,6 +12,7 @@ PLUGIN_DESCRIPTION="Plugin for ModularCppFramework"
 PLUGIN_PRIORITY=100
 PLUGIN_REALTIME=0
 PLUGIN_EVENT_DRIVEN=0
+PLUGIN_OUTPUT_DIR=""
 
 # Colors for output
 RED='\033[0;31m'
@@ -22,6 +23,7 @@ NC='\033[0m' # No Color
 
 # Usage function
 usage() {
+    local exit_code=${1:-1}
     echo -e "${BLUE}MCF Plugin Generator${NC}"
     echo ""
     echo "Usage: $0 -n <plugin_name> [options]"
@@ -34,6 +36,7 @@ usage() {
     echo "  -a, --author AUTHOR       Plugin author (default: MCF Developer)"
     echo "  -d, --description DESC    Plugin description"
     echo "  -p, --priority PRIORITY   Load priority (default: 100)"
+    echo "  -o, --output DIR          Output directory (default: plugins/)"
     echo "  -r, --realtime            Add IRealtimeUpdatable interface"
     echo "  -e, --event-driven        Add IEventDriven interface"
     echo "  -h, --help                Show this help message"
@@ -43,7 +46,7 @@ usage() {
     echo "  $0 -n AudioPlugin -v 2.0.0 -a 'Audio Team' -r"
     echo "  $0 -n NetworkPlugin -r -e -p 200"
     echo ""
-    exit 1
+    exit $exit_code
 }
 
 # Parse arguments
@@ -69,6 +72,10 @@ while [[ $# -gt 0 ]]; do
             PLUGIN_PRIORITY="$2"
             shift 2
             ;;
+        -o|--output)
+            PLUGIN_OUTPUT_DIR="$2"
+            shift 2
+            ;;
         -r|--realtime)
             PLUGIN_REALTIME=1
             shift
@@ -78,11 +85,11 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -h|--help)
-            usage
+            usage 0
             ;;
         *)
             echo -e "${RED}Error: Unknown option $1${NC}"
-            usage
+            usage 1
             ;;
     esac
 done
@@ -90,7 +97,7 @@ done
 # Validate required arguments
 if [ -z "$PLUGIN_NAME" ]; then
     echo -e "${RED}Error: Plugin name is required${NC}"
-    usage
+    usage 1
 fi
 
 # Get script directory (tools/ is now at project root level)
@@ -145,6 +152,10 @@ include("$CMAKE_DIR/MCFPluginGenerator.cmake")
 
 # Generate plugin
 set(PLUGIN_ARGS NAME "$PLUGIN_NAME" VERSION "$PLUGIN_VERSION" AUTHOR "$PLUGIN_AUTHOR" DESCRIPTION "$PLUGIN_DESCRIPTION" PRIORITY $PLUGIN_PRIORITY)
+
+if(NOT "$PLUGIN_OUTPUT_DIR" STREQUAL "")
+    list(APPEND PLUGIN_ARGS OUTPUT_DIR "$PLUGIN_OUTPUT_DIR/$PLUGIN_NAME")
+endif()
 
 if($PLUGIN_REALTIME)
     list(APPEND PLUGIN_ARGS REALTIME)

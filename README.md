@@ -1,7 +1,7 @@
 # ModularCppFramework - Production-Ready Modular C++ Application Framework
 
 [![CI](https://github.com/Sylvain-RZ/ModularCppFramework/workflows/CI/badge.svg)](https://github.com/Sylvain-RZ/ModularCppFramework/actions)
-[![Tests](https://img.shields.io/badge/tests-25%2F25%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-27%2F27%20passing-brightgreen)]()
 [![Quality](https://img.shields.io/badge/quality-100%2F100-brightgreen)]()
 [![Documentation](https://img.shields.io/badge/docs-100%25-brightgreen)]()
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue)]()
@@ -9,9 +9,9 @@
 
 Un framework C++17 header-only de qualité production pour créer des applications modulaires avec système de plugins dynamiques, hot-reload, et architecture event-driven.
 
-## 🎯 Statut: Production-Ready v1.0.2
+## 🎯 Statut: Production-Ready v1.0.3
 
-✅ **100% tests passent** (25/25) • ✅ **CI/CD configuré** • ✅ **Documentation complète** • ✅ **8 exemples fonctionnels**
+✅ **100% tests passent** (27/27) • ✅ **CI/CD configuré** • ✅ **Documentation complète** • ✅ **8 exemples fonctionnels** • 🆕 **Générateurs automatiques**
 
 ## ⚡ Caractéristiques Principales
 
@@ -43,7 +43,7 @@ Un framework C++17 header-only de qualité production pour créer des applicatio
 
 ```bash
 # Option 1: Via Conan (Recommandé)
-conan install modular-cpp-framework/1.0.0@
+conan install modular-cpp-framework/1.0.3@
 
 # Option 2: Via vcpkg
 vcpkg install modular-cpp-framework

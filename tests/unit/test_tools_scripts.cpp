@@ -195,7 +195,7 @@ TEST_CASE("create-plugin.sh - Help option works", "[tools][create-plugin]") {
 
     REQUIRE(result.success());
     REQUIRE(result.output.find("Usage:") != std::string::npos);
-    REQUIRE(result.output.find("OPTIONS:") != std::string::npos);
+    REQUIRE(result.output.find("Optional:") != std::string::npos);
 }
 
 TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") {
@@ -205,8 +205,11 @@ TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") 
     std::string script = fixture.getScriptPath("create-plugin.sh");
     std::string pluginDir = fixture.getTestPath("plugins/TestPlugin");
 
+    // Create plugins directory
+    fixture.fs.createDirectory(fixture.getTestPath("plugins"));
+
     SECTION("Create basic plugin") {
-        std::string cmd = script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d 'Test plugin' -p " + fixture.testDir + "/plugins";
+        std::string cmd = script + " -n TestPlugin -v 1.0.0 -a TestAuthor -d 'Test plugin' -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
@@ -216,49 +219,49 @@ TEST_CASE("create-plugin.sh - Basic plugin creation", "[tools][create-plugin]") 
         REQUIRE(result.success());
         REQUIRE(fixture.fs.exists(pluginDir));
         REQUIRE(fixture.fs.exists(Path::join(pluginDir, "CMakeLists.txt")));
-        REQUIRE(fixture.fs.exists(Path::join(pluginDir, "TestPlugin.hpp")));
         REQUIRE(fixture.fs.exists(Path::join(pluginDir, "TestPlugin.cpp")));
+        REQUIRE(fixture.fs.exists(Path::join(pluginDir, "README.md")));
 
         // Verify content
-        std::string headerPath = Path::join(pluginDir, "TestPlugin.hpp");
-        REQUIRE(fixture.fileContains(headerPath, "class TestPlugin"));
-        REQUIRE(fixture.fileContains(headerPath, "public mcf::IPlugin"));
-        REQUIRE(fixture.fileContains(headerPath, "1.0.0"));
+        std::string implPath = Path::join(pluginDir, "TestPlugin.cpp");
+        REQUIRE(fixture.fileContains(implPath, "class TestPlugin"));
+        REQUIRE(fixture.fileContains(implPath, "public IPlugin"));
+        REQUIRE(fixture.fileContains(implPath, "1.0.0"));
     }
 
     SECTION("Create realtime plugin") {
-        std::string cmd = script + " -n RealtimePlugin -r -p " + fixture.testDir + "/plugins";
+        std::string cmd = script + " -n RealtimePlugin -r -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
 
-        std::string headerPath = fixture.getTestPath("plugins/RealtimePlugin/RealtimePlugin.hpp");
-        REQUIRE(fixture.fs.exists(headerPath));
-        REQUIRE(fixture.fileContains(headerPath, "public mcf::IRealtimeUpdatable"));
-        REQUIRE(fixture.fileContains(headerPath, "void onUpdate(float deltaTime)"));
+        std::string implPath = fixture.getTestPath("plugins/RealtimePlugin/RealtimePlugin.cpp");
+        REQUIRE(fixture.fs.exists(implPath));
+        REQUIRE(fixture.fileContains(implPath, "public mcf::IRealtimeUpdatable"));
+        REQUIRE(fixture.fileContains(implPath, "void onRealtimeUpdate(float deltaTime)"));
     }
 
     SECTION("Create event-driven plugin") {
-        std::string cmd = script + " -n EventPlugin -e -p " + fixture.testDir + "/plugins";
+        std::string cmd = script + " -n EventPlugin -e -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
 
-        std::string headerPath = fixture.getTestPath("plugins/EventPlugin/EventPlugin.hpp");
-        REQUIRE(fixture.fs.exists(headerPath));
-        REQUIRE(fixture.fileContains(headerPath, "public mcf::IEventDriven"));
+        std::string implPath = fixture.getTestPath("plugins/EventPlugin/EventPlugin.cpp");
+        REQUIRE(fixture.fs.exists(implPath));
+        REQUIRE(fixture.fileContains(implPath, "public mcf::IEventDriven"));
     }
 
     SECTION("Create full-featured plugin") {
-        std::string cmd = script + " -n FullPlugin -r -e -p " + fixture.testDir + "/plugins";
+        std::string cmd = script + " -n FullPlugin -r -e -o " + fixture.testDir + "/plugins";
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
 
-        std::string headerPath = fixture.getTestPath("plugins/FullPlugin/FullPlugin.hpp");
-        REQUIRE(fixture.fs.exists(headerPath));
-        REQUIRE(fixture.fileContains(headerPath, "public mcf::IRealtimeUpdatable"));
-        REQUIRE(fixture.fileContains(headerPath, "public mcf::IEventDriven"));
+        std::string implPath = fixture.getTestPath("plugins/FullPlugin/FullPlugin.cpp");
+        REQUIRE(fixture.fs.exists(implPath));
+        REQUIRE(fixture.fileContains(implPath, "public mcf::IRealtimeUpdatable"));
+        REQUIRE(fixture.fileContains(implPath, "public mcf::IEventDriven"));
     }
 
     fixture.TearDown();
@@ -299,7 +302,7 @@ TEST_CASE("create-application.sh - Help option works", "[tools][create-applicati
 
     REQUIRE(result.success());
     REQUIRE(result.output.find("Usage:") != std::string::npos);
-    REQUIRE(result.output.find("OPTIONS:") != std::string::npos);
+    REQUIRE(result.output.find("Optional:") != std::string::npos);
 }
 
 TEST_CASE("create-application.sh - Basic application creation", "[tools][create-application]") {
@@ -310,7 +313,7 @@ TEST_CASE("create-application.sh - Basic application creation", "[tools][create-
     std::string appDir = fixture.getTestPath("TestApp");
 
     SECTION("Create basic application") {
-        std::string cmd = script + " -n TestApp -o " + fixture.testDir;
+        std::string cmd = script + " -n TestApp -o " + appDir;
         auto result = ScriptExecutor::execute(cmd);
 
         INFO("Command: " << cmd);
@@ -321,45 +324,44 @@ TEST_CASE("create-application.sh - Basic application creation", "[tools][create-
         REQUIRE(fixture.fs.exists(appDir));
         REQUIRE(fixture.fs.exists(Path::join(appDir, "CMakeLists.txt")));
         REQUIRE(fixture.fs.exists(Path::join(appDir, "src/main.cpp")));
-        REQUIRE(fixture.fs.exists(Path::join(appDir, "src/TestApp.hpp")));
-        REQUIRE(fixture.fs.exists(Path::join(appDir, "src/TestApp.cpp")));
+        REQUIRE(fixture.fs.exists(Path::join(appDir, "README.md")));
 
         // Verify content
-        std::string headerPath = Path::join(appDir, "src/TestApp.hpp");
-        REQUIRE(fixture.fileContains(headerPath, "class TestApp"));
-        REQUIRE(fixture.fileContains(headerPath, "public mcf::Application"));
+        std::string mainPath = Path::join(appDir, "src/main.cpp");
+        REQUIRE(fixture.fileContains(mainPath, "class TestApp"));
+        REQUIRE(fixture.fileContains(mainPath, "public mcf::Application"));
     }
 
     SECTION("Create realtime application") {
-        std::string cmd = script + " -n RealtimeApp -r -o " + fixture.testDir;
+        std::string cmd = script + " -n RealtimeApp -r -o " + fixture.getTestPath("RealtimeApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
 
-        std::string implPath = fixture.getTestPath("RealtimeApp/src/RealtimeApp.cpp");
-        REQUIRE(fixture.fs.exists(implPath));
-        REQUIRE(fixture.fileContains(implPath, "onUpdate"));
+        std::string mainPath = fixture.getTestPath("RealtimeApp/src/main.cpp");
+        REQUIRE(fixture.fs.exists(mainPath));
+        REQUIRE(fixture.fileContains(mainPath, "void onUpdate(float deltaTime)"));
     }
 
     SECTION("Create application with config support") {
-        std::string cmd = script + " -n ConfigApp -c -o " + fixture.testDir;
+        std::string cmd = script + " -n ConfigApp -c -o " + fixture.getTestPath("ConfigApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
 
-        std::string configPath = fixture.getTestPath("ConfigApp/config/app.json");
+        std::string configPath = fixture.getTestPath("ConfigApp/config/config.json");
         REQUIRE(fixture.fs.exists(configPath));
     }
 
     SECTION("Create application with modules") {
-        std::string cmd = script + " -n ModuleApp -m logger,profiling -o " + fixture.testDir;
+        std::string cmd = script + " -n ModuleApp -m logger,profiling -o " + fixture.getTestPath("ModuleApp");
         auto result = ScriptExecutor::execute(cmd);
 
         REQUIRE(result.success());
 
         std::string cmakePath = fixture.getTestPath("ModuleApp/CMakeLists.txt");
         REQUIRE(fixture.fs.exists(cmakePath));
-        REQUIRE(fixture.fileContains(cmakePath, "mcf_logger_module"));
+        // Logger is header-only, no linking needed in CMakeLists
         REQUIRE(fixture.fileContains(cmakePath, "mcf_profiling_module"));
     }
 
@@ -458,9 +460,12 @@ TEST_CASE("Tools Integration - Create plugin and verify buildable", "[tools][int
     std::string pluginScript = fixture.getScriptPath("create-plugin.sh");
     std::string pluginDir = fixture.getTestPath("plugins/IntegrationPlugin");
 
+    // Create plugins directory
+    fixture.fs.createDirectory(fixture.getTestPath("plugins"));
+
     SECTION("Create plugin and check CMake validity") {
         // Create plugin
-        std::string createCmd = pluginScript + " -n IntegrationPlugin -r -p " + fixture.testDir + "/plugins";
+        std::string createCmd = pluginScript + " -n IntegrationPlugin -r -o " + fixture.testDir + "/plugins";
         auto createResult = ScriptExecutor::execute(createCmd);
 
         REQUIRE(createResult.success());
@@ -484,7 +489,7 @@ TEST_CASE("Tools Integration - Create application and verify structure", "[tools
     std::string appDir = fixture.getTestPath("IntegrationApp");
 
     SECTION("Create full-featured application") {
-        std::string createCmd = appScript + " -n IntegrationApp -r -e -c -m logger,profiling -o " + fixture.testDir;
+        std::string createCmd = appScript + " -n IntegrationApp -r -e -c -m logger,profiling -o " + appDir;
         auto createResult = ScriptExecutor::execute(createCmd);
 
         INFO("Command: " << createCmd);

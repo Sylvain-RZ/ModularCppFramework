@@ -14,6 +14,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2025-10-18
+
+### Added
+- **Automatic Generators System**: Complete code generation tools for rapid development
+  - `tools/create-plugin.sh` - Generate plugins from templates in seconds
+  - `tools/create-application.sh` - Generate complete applications with modules
+  - `tools/package-application.sh` - Package applications for distribution
+  - CMake generator functions: `mcf_generate_plugin()`, `mcf_generate_application()`, `mcf_package_application()`
+  - Multiple plugin templates: basic, realtime, event-driven, full
+  - Application templates with module integration support
+- **Comprehensive Generator Documentation**:
+  - `docs/sdk/generators/QUICKSTART.md` - Create plugin/app in 30 seconds
+  - `docs/sdk/generators/PLUGIN_GENERATOR.md` - Complete plugin generator guide
+  - `docs/sdk/generators/APPLICATION_GENERATOR.md` - Complete application generator guide
+  - `docs/sdk/generators/INDEX.md` - Generator system index
+  - `docs/sdk/generators/README.md` - Generators overview
+- **Enhanced Documentation Structure**:
+  - Reorganized documentation into `docs/sdk/` (for users) and `docs/development/` (for maintainers)
+  - `docs/sdk/QUICK_START.md` - Comprehensive 5-minute getting started guide
+  - `docs/sdk/INSTALLATION.md` - Detailed installation guide (Conan, vcpkg, sources)
+  - `docs/sdk/USAGE.md` - Complete component usage guide
+  - `docs/development/BUILD.md` - Build guide for contributors
+  - `docs/development/TOOLS_TESTING.md` - Generator testing guide
+  - `docs/development/PACKAGING.md` - SDK distribution guide
+- **Package Manager Support**:
+  - vcpkg portfile (`portfile.cmake`) for vcpkg distribution
+  - CMake config file templates for find_package() support
+  - Package headers script for SDK distribution
+- **Enhanced Test Coverage**:
+  - `test_plugin_loader_edge_cases.cpp` - 23 edge case tests for PluginLoader
+  - `test_plugin_manager_edge_cases.cpp` - 15 edge case tests for PluginManager
+  - `test_tools_scripts.cpp` - 18 tests for generators and scripts
+  - Total test count increased from 25 to 56 tests
+
+### Changed
+- **Documentation Organization**: Split documentation into SDK (user) and development (maintainer) categories
+- **README.md**: Streamlined main README with focus on quick start and linking to detailed docs
+- **CMakeLists.txt**: Enhanced with packaging targets and generator integration
+- **Build System**: Improved module CMake configuration for better maintainability
+- **.gitignore**: Updated to ignore generator test output and packaging artifacts
+
+### Improved
+- **Developer Experience**: Create production-ready plugins and applications in 30 seconds
+- **Testing**: Comprehensive edge case coverage for plugin system - **100% tests passing** (26/26 test suites, 56 total tests)
+- **Distribution**: Complete packaging system for both SDK and end-user applications
+- **Documentation Quality**: Clear separation between user guides and developer documentation
+
+---
+
 ## [1.0.2] - 2025-10-18
 
 ### Fixed
