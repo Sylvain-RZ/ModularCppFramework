@@ -198,25 +198,25 @@ public:
             return false;
         }
 
-        // Ensure directory exists
-        std::filesystem::path filePath(savePath);
-        if (filePath.has_parent_path()) {
-            try {
+        try {
+            // Ensure directory exists
+            std::filesystem::path filePath(savePath);
+            if (filePath.has_parent_path()) {
                 std::filesystem::create_directories(filePath.parent_path());
-            } catch (const std::filesystem::filesystem_error&) {
-                // Failed to create directory (e.g., path is a file or invalid)
-                return false;
             }
-        }
 
-        bool success = JsonParser::writeFile(savePath, m_config);
-        if (success) {
-            m_dirty = false;
-            if (!path.empty()) {
-                m_configPath = path;
+            bool success = JsonParser::writeFile(savePath, m_config);
+            if (success) {
+                m_dirty = false;
+                if (!path.empty()) {
+                    m_configPath = path;
+                }
             }
+            return success;
+        } catch (const std::filesystem::filesystem_error&) {
+            // Failed to create directory or write file (e.g., path is invalid, device file, or permission denied)
+            return false;
         }
-        return success;
     }
 
     /**
