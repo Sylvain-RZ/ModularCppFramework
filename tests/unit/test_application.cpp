@@ -47,6 +47,14 @@ public:
     }
 };
 
+// Test classes for service/resource tests (defined here to avoid name mangling issues on Windows)
+class TestService {};
+class TestResource {
+public:
+    std::string data;
+    explicit TestResource(const std::string& d) : data(d) {}
+};
+
 // Test application
 class TestApp : public Application {
 private:
@@ -457,7 +465,6 @@ TEST_CASE("Application - ServiceLocator integration", "[Application]") {
     app.initialize();
 
     SECTION("Can register and resolve services") {
-        class TestService {};
         auto service = std::make_shared<TestService>();
 
         app.getServiceLocator()->registerSingleton<TestService>(service);
@@ -475,12 +482,6 @@ TEST_CASE("Application - ResourceManager integration", "[Application]") {
     app.initialize();
 
     SECTION("Can register resource loaders") {
-        class TestResource {
-        public:
-            std::string data;
-            TestResource(const std::string& d) : data(d) {}
-        };
-
         app.getResourceManager()->registerLoader<TestResource>(
             [](const std::string& path) {
                 return std::make_shared<TestResource>(path);

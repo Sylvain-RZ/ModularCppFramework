@@ -524,15 +524,17 @@ TEST_CASE("Error Recovery - File system errors", "[integration][error][filesyste
         REQUIRE_FALSE(config.load("/tmp/nonexistent_file_12345.json"));
     }
 
-    SECTION("Write to read-only location") {
+    SECTION("Write to invalid path") {
         ConfigurationManager config;
         config.set("test", JsonValue("value"));
 
-        // Use a path that's guaranteed to fail on all platforms
-        // /dev/null is a special device file that can't be used as a directory
+        // Use invalid paths that should fail on all platforms
+        // These paths have invalid components that can't be created
         #ifdef _WIN32
-            bool result = config.save("C:\\Windows\\System32\\cannot_write_here.json");
+            // Invalid filename characters on Windows (< > are not allowed)
+            bool result = config.save("C:\\invalid<>path\\cannot_write_here.json");
         #else
+            // /dev/null is a device file, can't be used as a directory
             bool result = config.save("/dev/null/cannot_write_here.json");
         #endif
         REQUIRE_FALSE(result);
