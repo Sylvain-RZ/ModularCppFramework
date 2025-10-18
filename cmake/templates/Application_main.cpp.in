@@ -1,0 +1,88 @@
+#include <iostream>
+#include <memory>
+
+// MCF Core
+#include "Application.hpp"
+#include "EventBus.hpp"
+#include "ServiceLocator.hpp"
+#include "PluginManager.hpp"
+@APP_MODULE_INCLUDES@
+/**
+ * @brief @APP_DESCRIPTION@
+ *
+ * @author @APP_AUTHOR@
+ * @version @APP_VERSION@
+ */
+class @APP_NAME@ : public @APP_BASE_CLASS@ {
+public:
+    @APP_NAME@() : Application("@APP_NAME@", @APP_VERSION@) {
+        std::cout << "[@APP_NAME@] Initializing application..." << std::endl;
+    }
+
+    ~@APP_NAME@() override {
+        std::cout << "[@APP_NAME@] Shutting down application..." << std::endl;
+    }
+
+protected:
+    bool onInitialize() override {
+        std::cout << "[@APP_NAME@] Application initialization started" << std::endl;
+
+@APP_MODULE_REGISTRATIONS@
+        // TODO: Initialize your application here
+        // Example: Load resources, setup game state, etc.
+
+@APP_PLUGIN_PATHS@
+        // Setup configuration if available
+        auto& config = getConfigurationManager();
+        if (config.loadFromFile("config/config.json")) {
+            std::cout << "[@APP_NAME@] Configuration loaded successfully" << std::endl;
+        } else {
+            std::cout << "[@APP_NAME@] No configuration file found, using defaults" << std::endl;
+        }
+
+@APP_EVENT_METHOD@
+        std::cout << "[@APP_NAME@] Application initialization complete!" << std::endl;
+        return true;
+    }
+
+    void onShutdown() override {
+        std::cout << "[@APP_NAME@] Cleaning up..." << std::endl;
+
+        // TODO: Cleanup your application here
+        // Example: Save state, release resources, etc.
+
+        std::cout << "[@APP_NAME@] Cleanup complete" << std::endl;
+    }
+@APP_UPDATE_METHOD@
+private:
+    // TODO: Add your application-specific member variables here
+};
+
+int main(int argc, char* argv[]) {
+    std::cout << "=== @APP_NAME@ v@APP_VERSION@ ===" << std::endl;
+    std::cout << "Built with ModularCppFramework" << std::endl;
+    std::cout << std::endl;
+
+    try {
+        // Create and run application
+        @APP_NAME@ app;
+
+        if (!app.initialize()) {
+            std::cerr << "Failed to initialize application" << std::endl;
+            return 1;
+        }
+
+        // Run the application
+        app.run();
+
+        app.shutdown();
+
+        std::cout << std::endl;
+        std::cout << "Application terminated successfully" << std::endl;
+        return 0;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Fatal error: " << e.what() << std::endl;
+        return 1;
+    }
+}

@@ -1,0 +1,42 @@
+cmake_minimum_required(VERSION 3.16)
+
+# @PLUGIN_NAME@ Plugin
+# @PLUGIN_DESCRIPTION@
+# Author: @PLUGIN_AUTHOR@
+# Version: @PLUGIN_VERSION@
+
+add_library(@PLUGIN_NAME_LOWER@ SHARED
+    @PLUGIN_NAME@.cpp
+)
+
+target_link_libraries(@PLUGIN_NAME_LOWER@ PRIVATE
+    mcf_core
+)
+
+# Set output directory
+set_target_properties(@PLUGIN_NAME_LOWER@ PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${PLUGIN_OUTPUT_DIRECTORY}
+    RUNTIME_OUTPUT_DIRECTORY ${PLUGIN_OUTPUT_DIRECTORY}
+    PREFIX ""  # Don't add "lib" prefix on Unix
+)
+
+# Set symbol visibility (hide all symbols except exported ones)
+set_target_properties(@PLUGIN_NAME_LOWER@ PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+)
+
+# Optional: Add additional include directories
+# target_include_directories(@PLUGIN_NAME_LOWER@ PRIVATE
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include
+# )
+
+# Optional: Link additional libraries
+# target_link_libraries(@PLUGIN_NAME_LOWER@ PRIVATE
+#     your_library
+# )
+
+# Install plugin to plugins directory
+install(TARGETS @PLUGIN_NAME_LOWER@
+        LIBRARY DESTINATION plugins
+        RUNTIME DESTINATION plugins)

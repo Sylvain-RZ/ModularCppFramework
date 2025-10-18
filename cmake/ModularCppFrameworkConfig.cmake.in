@@ -1,0 +1,61 @@
+@PACKAGE_INIT@
+
+# ModularCppFramework CMake Config File
+# This file allows users to find and use ModularCppFramework via find_package()
+
+set(ModularCppFramework_VERSION @PROJECT_VERSION@)
+
+# Compute paths
+get_filename_component(MCF_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(MCF_INSTALL_PREFIX "${MCF_CMAKE_DIR}/../.." ABSOLUTE)
+
+set(MCF_INCLUDE_DIR "${MCF_INSTALL_PREFIX}/include")
+set(MCF_LIBRARY_DIR "${MCF_INSTALL_PREFIX}/lib")
+
+# Core is header-only, so just need include directories
+if(NOT TARGET mcf::core)
+    add_library(mcf::core INTERFACE IMPORTED)
+    set_target_properties(mcf::core PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${MCF_INCLUDE_DIR}"
+    )
+
+    # Add platform-specific dependencies
+    if(UNIX AND NOT APPLE)
+        set_target_properties(mcf::core PROPERTIES
+            INTERFACE_LINK_LIBRARIES "dl;pthread"
+        )
+    elseif(WIN32)
+        # Windows doesn't need dl, pthread
+    endif()
+endif()
+
+# Optional modules (if libraries exist)
+set(MCF_MODULES logger networking profiling realtime)
+
+foreach(module ${MCF_MODULES})
+    set(module_lib "${MCF_LIBRARY_DIR}/libmcf_${module}_module.a")
+
+    if(EXISTS "${module_lib}" AND NOT TARGET mcf::${module})
+        add_library(mcf::${module} STATIC IMPORTED)
+        set_target_properties(mcf::${module} PROPERTIES
+            IMPORTED_LOCATION "${module_lib}"
+            INTERFACE_INCLUDE_DIRECTORIES "${MCF_INCLUDE_DIR}"
+            INTERFACE_LINK_LIBRARIES mcf::core
+        )
+    endif()
+endforeach()
+
+# Include packaging utilities
+include("${MCF_CMAKE_DIR}/MCFPackaging.cmake")
+
+# Check required components
+check_required_components(ModularCppFramework)
+
+# Export variables for backward compatibility
+set(ModularCppFramework_FOUND TRUE)
+set(ModularCppFramework_INCLUDE_DIRS ${MCF_INCLUDE_DIR})
+set(ModularCppFramework_LIBRARIES mcf::core)
+
+message(STATUS "Found ModularCppFramework ${ModularCppFramework_VERSION}")
+message(STATUS "  Include: ${MCF_INCLUDE_DIR}")
+message(STATUS "  Library: ${MCF_LIBRARY_DIR}")

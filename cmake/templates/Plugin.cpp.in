@@ -1,0 +1,150 @@
+#include "../../core/IPlugin.hpp"
+@PLUGIN_INTERFACE_INCLUDES@#include "../../core/PluginContext.hpp"
+#include "../../core/PluginMetadata.hpp"
+#include "../../core/EventBus.hpp"
+#include "../../core/ServiceLocator.hpp"
+
+#include <iostream>
+#include <string>
+
+namespace mcf {
+
+/**
+ * @brief @PLUGIN_DESCRIPTION@
+ *
+ * @author @PLUGIN_AUTHOR@
+ * @version @PLUGIN_VERSION@
+ */
+class @PLUGIN_NAME@ : public IPlugin@PLUGIN_INTERFACES@ {
+private:
+    bool m_initialized = false;
+    PluginMetadata m_metadata;
+    PluginContext m_context;
+
+    // TODO: Add your plugin-specific member variables here
+
+public:
+    @PLUGIN_NAME@() {
+        // Setup metadata
+        m_metadata.name = "@PLUGIN_NAME@";
+        m_metadata.version = "@PLUGIN_VERSION@";
+        m_metadata.author = "@PLUGIN_AUTHOR@";
+        m_metadata.description = "@PLUGIN_DESCRIPTION@";
+        m_metadata.loadPriority = @PLUGIN_PRIORITY@;
+
+        // TODO: Add dependencies if needed
+        // m_metadata.addDependency("OtherPlugin", "1.0.0", "2.0.0", true);
+    }
+
+    ~@PLUGIN_NAME@() override {
+        if (m_initialized) {
+            shutdown();
+        }
+    }
+
+    // Prevent copying
+    @PLUGIN_NAME@(const @PLUGIN_NAME@&) = delete;
+    @PLUGIN_NAME@& operator=(const @PLUGIN_NAME@&) = delete;
+
+    std::string getName() const override {
+        return m_metadata.name;
+    }
+
+    std::string getVersion() const override {
+        return m_metadata.version;
+    }
+
+    const PluginMetadata& getMetadata() const override {
+        return m_metadata;
+    }
+
+    bool initialize(PluginContext& context) override {
+        if (m_initialized) {
+            std::cerr << "[@PLUGIN_NAME@] Already initialized!" << std::endl;
+            return true;
+        }
+
+        m_context = context;
+
+        std::cout << "[@PLUGIN_NAME@] Initializing plugin..." << std::endl;
+        std::cout << "[@PLUGIN_NAME@] Version: " << m_metadata.version << std::endl;
+
+        // TODO: Initialize your plugin here
+        // Example: Subscribe to events
+        if (m_context.getEventBus()) {
+            // m_context.getEventBus()->subscribe("event.name",
+            //     [this](const Event& event) {
+            //         // Handle event
+            //     },
+            //     100  // Priority
+            // );
+        }
+
+        // Example: Register services
+        if (m_context.getServiceLocator()) {
+            // m_context.getServiceLocator()->registerSingleton<IMyService>(
+            //     std::make_shared<MyServiceImpl>()
+            // );
+        }
+
+        // Example: Access configuration
+        if (m_context.getConfigurationManager()) {
+            // auto timeout = m_context.getConfigurationManager()->getInt(
+            //     "@PLUGIN_NAME_LOWER@.timeout", 5000
+            // );
+        }
+
+        // Publish initialization event
+        if (m_context.getEventBus()) {
+            Event initEvent("plugin.@PLUGIN_NAME_LOWER@.initialized");
+            m_context.getEventBus()->publish("plugin.@PLUGIN_NAME_LOWER@.initialized", initEvent);
+        }
+
+        m_initialized = true;
+        std::cout << "[@PLUGIN_NAME@] Initialization complete!" << std::endl;
+
+        return true;
+    }
+
+    void shutdown() override {
+        if (!m_initialized) {
+            return;
+        }
+
+        std::cout << "[@PLUGIN_NAME@] Shutting down..." << std::endl;
+
+        // TODO: Cleanup your plugin here
+
+        // Publish shutdown event
+        if (m_context.getEventBus()) {
+            Event shutdownEvent("plugin.@PLUGIN_NAME_LOWER@.shutdown");
+            m_context.getEventBus()->publish("plugin.@PLUGIN_NAME_LOWER@.shutdown", shutdownEvent);
+        }
+
+        m_initialized = false;
+        std::cout << "[@PLUGIN_NAME@] Shutdown complete!" << std::endl;
+    }
+
+    bool isInitialized() const override {
+        return m_initialized;
+    }
+@PLUGIN_INTERFACE_METHODS@
+    /**
+     * @brief Get plugin manifest JSON (for dynamic loading)
+     */
+    static const char* getManifestJson() {
+        return R"({
+            "name": "@PLUGIN_NAME@",
+            "version": "@PLUGIN_VERSION@",
+            "author": "@PLUGIN_AUTHOR@",
+            "description": "@PLUGIN_DESCRIPTION@",
+            "dependencies": @PLUGIN_DEPS_JSON@,
+            "load_priority": @PLUGIN_PRIORITY@
+        })";
+    }
+};
+
+} // namespace mcf
+
+// Export plugin symbols for dynamic loading
+MCF_PLUGIN_EXPORT(mcf::@PLUGIN_NAME@)

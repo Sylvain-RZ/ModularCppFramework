@@ -1,0 +1,90 @@
+# @PLUGIN_NAME@
+
+@PLUGIN_DESCRIPTION@
+
+## Plugin Information
+
+- **Name**: @PLUGIN_NAME@
+- **Version**: @PLUGIN_VERSION@
+- **Author**: @PLUGIN_AUTHOR@
+- **Load Priority**: @PLUGIN_PRIORITY@
+
+## Description
+
+@PLUGIN_DESCRIPTION@
+
+## Dependencies
+
+@PLUGIN_DEPS_JSON@
+
+## Features
+
+- TODO: List your plugin features here
+
+## Usage
+
+### Configuration
+
+Add the following to your `config.json`:
+
+```json
+{
+    "@PLUGIN_NAME_LOWER@": {
+        "enabled": true
+    }
+}
+```
+
+### Example
+
+```cpp
+// The plugin is automatically loaded by PluginManager
+// You can interact with it via EventBus or ServiceLocator
+
+// Example: Subscribe to plugin events
+eventBus->subscribe("plugin.@PLUGIN_NAME_LOWER@.initialized",
+    [](const mcf::Event& event) {
+        std::cout << "@PLUGIN_NAME@ has been initialized!" << std::endl;
+    }
+);
+
+// Example: Access plugin services
+auto service = serviceLocator->resolve<IMyService>();
+```
+
+## Building
+
+The plugin is built automatically when you build the main project:
+
+```bash
+cd build
+cmake ..
+make -j$(nproc)
+```
+
+The compiled plugin will be in `build/plugins/@PLUGIN_NAME_LOWER@.so` (Linux) or `build/plugins/@PLUGIN_NAME_LOWER@.dll` (Windows).
+
+## Development
+
+### Adding New Features
+
+1. Edit `@PLUGIN_NAME@.cpp` to implement your logic
+2. Add any new dependencies to `CMakeLists.txt`
+3. Update this README with new features
+
+### Testing
+
+Create test cases in `tests/` directory:
+
+```cpp
+#include <catch2/catch_amalgamated.hpp>
+#include "../plugins/@PLUGIN_NAME@/@PLUGIN_NAME@.cpp"
+
+TEST_CASE("@PLUGIN_NAME@ initialization", "[plugin]") {
+    // Test plugin initialization
+}
+```
+
+## License
+
+Same as ModularCppFramework

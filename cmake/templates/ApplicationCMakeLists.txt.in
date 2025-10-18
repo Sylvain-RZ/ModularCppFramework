@@ -1,0 +1,100 @@
+cmake_minimum_required(VERSION 3.16)
+project(@APP_NAME@ VERSION @APP_VERSION@)
+
+# C++ Standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Build type
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+# Compiler flags
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-Wall -Wextra -pedantic)
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(-g -O0)
+    else()
+        add_compile_options(-O3)
+    endif()
+endif()
+
+# Add ModularCppFramework
+# Option 1: If MCF is in a subdirectory (e.g., external/ModularCppFramework)
+# add_subdirectory(external/ModularCppFramework)
+
+# Option 2: If MCF is installed system-wide
+# find_package(ModularCppFramework REQUIRED)
+
+# Option 3: If MCF is in the parent directory (for development)
+if(EXISTS "${CMAKE_SOURCE_DIR}/../core")
+    # We're in a subdirectory of MCF itself
+    set(MCF_ROOT "${CMAKE_SOURCE_DIR}/..")
+    include_directories(${MCF_ROOT})
+    add_subdirectory(${MCF_ROOT}/core ${CMAKE_BINARY_DIR}/mcf_core)
+    add_subdirectory(${MCF_ROOT}/modules ${CMAKE_BINARY_DIR}/mcf_modules)
+else()
+    # MCF is external - adjust path as needed
+    message(FATAL_ERROR "ModularCppFramework not found. Please set MCF_ROOT or add as subdirectory")
+endif()
+
+# Output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# Plugin output directory
+set(PLUGIN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
+
+# Application executable
+add_executable(@APP_NAME_LOWER@
+    src/main.cpp
+)
+
+# Link libraries
+target_link_libraries(@APP_NAME_LOWER@ PRIVATE
+    mcf_core
+@APP_MODULE_LINKS@)
+
+# Include directories
+target_include_directories(@APP_NAME_LOWER@ PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# Copy configuration files to build directory
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config
+         DESTINATION ${CMAKE_BINARY_DIR})
+endif()
+
+# Install targets
+install(TARGETS @APP_NAME_LOWER@
+        RUNTIME DESTINATION bin)
+
+# Install configuration files
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config)
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/config
+            DESTINATION .)
+endif()
+
+# Optional: Add packaging support
+include(${MCF_ROOT}/cmake/MCFPackaging.cmake OPTIONAL)
+if(COMMAND mcf_package_application)
+    mcf_package_application(
+        TARGET @APP_NAME_LOWER@
+        VERSION @APP_VERSION@
+        OUTPUT_NAME "@APP_NAME@"
+        CONFIG_FILES config/config.json
+    )
+endif()
+
+# Print configuration summary
+message(STATUS "")
+message(STATUS "=== @APP_NAME@ Configuration ===")
+message(STATUS "Version:       @APP_VERSION@")
+message(STATUS "Build type:    ${CMAKE_BUILD_TYPE}")
+message(STATUS "C++ standard:  ${CMAKE_CXX_STANDARD}")
+message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "")

@@ -1,0 +1,224 @@
+# @APP_NAME@
+
+@APP_DESCRIPTION@
+
+## Information
+
+- **Name**: @APP_NAME@
+- **Version**: @APP_VERSION@
+- **Author**: @APP_AUTHOR@
+- **Framework**: ModularCppFramework
+
+## Description
+
+@APP_DESCRIPTION@
+
+## Features
+
+- TODO: List your application features here
+
+## Requirements
+
+- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
+- CMake 3.16 or higher
+- ModularCppFramework
+
+## Building
+
+### Quick Start
+
+```bash
+# Clone or extract the project
+cd @APP_NAME@
+
+# Create build directory
+mkdir build && cd build
+
+# Configure
+cmake ..
+
+# Build
+make -j$(nproc)
+
+# Run
+./bin/@APP_NAME_LOWER@
+```
+
+### Build Options
+
+```bash
+# Debug build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make -j$(nproc)
+
+# Release build (optimized)
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc)
+```
+
+## Running
+
+### From Build Directory
+
+```bash
+cd build
+./bin/@APP_NAME_LOWER@
+```
+
+### Installed
+
+```bash
+# Install
+sudo make install
+
+# Run
+@APP_NAME_LOWER@
+```
+
+## Configuration
+
+The application can be configured via `config/config.json`:
+
+```json
+{
+    "app": {
+        "name": "@APP_NAME@",
+        "version": "@APP_VERSION@",
+        "fps_target": 60
+    }
+}
+```
+
+## Project Structure
+
+```
+@APP_NAME@/
+├── src/
+│   └── main.cpp              # Application entry point
+├── include/                  # Header files (if any)
+├── config/
+│   └── config.json           # Configuration file
+├── build/                    # Build directory (generated)
+│   ├── bin/
+│   │   └── @APP_NAME_LOWER@  # Compiled executable
+│   └── config/               # Configuration (copied)
+├── CMakeLists.txt            # Build configuration
+└── README.md                 # This file
+```
+
+## Development
+
+### Adding New Features
+
+1. Edit `src/main.cpp` to implement your application logic
+2. Add new source files to `src/` as needed
+3. Update `CMakeLists.txt` to include new source files
+4. Rebuild: `cd build && make`
+
+### Using MCF Modules
+
+The following modules are available:
+
+- **Logger**: Flexible logging system
+- **Networking**: TCP client/server
+- **Profiling**: Performance metrics
+- **Realtime**: Fixed timestep updates
+
+To add a module, update `CMakeLists.txt`:
+
+```cmake
+target_link_libraries(@APP_NAME_LOWER@ PRIVATE
+    mcf_core
+    mcf_networking_module
+    mcf_profiling_module
+)
+```
+
+And include in `src/main.cpp`:
+
+```cpp
+#include "modules/networking/NetworkingModule.hpp"
+
+// In onInitialize():
+addModule<mcf::NetworkingModule>();
+```
+
+### Using Plugins
+
+1. Create plugins in a `plugins/` directory
+2. Update CMakeLists.txt to build plugins
+3. Load plugins in `onInitialize()`:
+
+```cpp
+m_pluginManager.loadPlugin("plugins/my_plugin.so");
+```
+
+## Packaging
+
+### Create Distribution Package
+
+```bash
+cd build
+make package-@APP_NAME_LOWER@
+```
+
+This creates: `@APP_NAME@-@APP_VERSION@-<platform>-<arch>.tar.gz`
+
+### Package Contents
+
+```
+@APP_NAME@-@APP_VERSION@/
+├── bin/@APP_NAME_LOWER@
+├── config/config.json
+└── README.txt
+```
+
+## Troubleshooting
+
+### Build Fails - MCF Not Found
+
+**Solution**: Update `CMakeLists.txt` to point to your MCF installation:
+
+```cmake
+set(MCF_ROOT "/path/to/ModularCppFramework")
+add_subdirectory(${MCF_ROOT}/core ${CMAKE_BINARY_DIR}/mcf_core)
+```
+
+### Runtime Error - Config Not Found
+
+**Solution**: Run from build directory or copy config files:
+
+```bash
+cp -r config/ build/
+```
+
+### Plugin Not Loading
+
+**Solution**: Check plugin path and ensure it's built:
+
+```bash
+ls build/plugins/
+# Should show your_plugin.so
+```
+
+## License
+
+Same as ModularCppFramework
+
+## Support
+
+For issues and questions, please refer to:
+- ModularCppFramework documentation
+- MCF GitHub repository
+
+## Changelog
+
+### @APP_VERSION@ (Initial Release)
+
+- Initial application template
+- Basic MCF integration
+- Configuration support
+
+---
+
+Built with [ModularCppFramework](https://github.com/yourusername/ModularCppFramework)

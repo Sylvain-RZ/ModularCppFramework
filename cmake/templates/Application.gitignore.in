@@ -1,0 +1,46 @@
+# Build Output
+build/
+bin/
+lib/
+cmake-build-*/
+out/
+
+# CMake Generated Files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Compiled Files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Runtime Generated
+logs/
+*.log
+*.log.*
+
+# Local Configuration (keep template)
+config/local_config.json
+.env
+.env.local

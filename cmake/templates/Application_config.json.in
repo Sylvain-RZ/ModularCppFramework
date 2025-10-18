@@ -1,0 +1,35 @@
+{
+    "app": {
+        "name": "@APP_NAME@",
+        "version": "@APP_VERSION@",
+        "author": "@APP_AUTHOR@",
+        "fps_target": 60,
+        "window": {
+            "width": 800,
+            "height": 600,
+            "title": "@APP_NAME@ v@APP_VERSION@"
+        }
+    },
+    "logging": {
+        "level": "info",
+        "console": true,
+        "file": "logs/@APP_NAME_LOWER@.log",
+        "rotating": {
+            "enabled": true,
+            "max_size": 10485760,
+            "max_files": 5
+        }
+    },
+    "profiling": {
+        "enabled": false,
+        "output_file": "metrics/@APP_NAME_LOWER@_metrics.json"
+    },
+    "plugins": {
+        "auto_load": true,
+        "directory": "plugins",
+        "hot_reload": {
+            "enabled": false,
+            "interval_ms": 1000
+        }
+    }
+}
