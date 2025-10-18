@@ -17,6 +17,9 @@
 #include <chrono>
 #include <thread>
 #include <filesystem>
+
+// Skip this test on Windows - it requires Unix toolchain (g++, popen, unistd.h, etc.)
+#ifndef _WIN32
 #include <unistd.h>  // For getcwd
 
 using namespace mcf;
@@ -395,3 +398,12 @@ TEST_CASE("Hot Reload - Multiple plugins coordination", "[integration][hot-reloa
 
     fs::remove_all(testDir);
 }
+
+#else  // _WIN32
+
+// Empty test case for Windows - hot reload with real plugins requires Unix toolchain
+TEST_CASE("Hot Reload - Real plugin end-to-end", "[integration][hot-reload][real]") {
+    SUCCEED("Test skipped on Windows - requires Unix toolchain");
+}
+
+#endif  // _WIN32
