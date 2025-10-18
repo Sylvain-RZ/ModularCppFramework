@@ -6,7 +6,7 @@ import os
 
 class ModularCppFrameworkConan(ConanFile):
     name = "modular-cpp-framework"
-    version = "1.0.0"
+    version = "1.0.1"
     license = "MIT"
     author = "ModularCppFramework Contributors"
     url = "https://github.com/Sylvain-RZ/ModularCppFramework"
