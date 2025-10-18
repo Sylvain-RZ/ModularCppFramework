@@ -528,8 +528,13 @@ TEST_CASE("Error Recovery - File system errors", "[integration][error][filesyste
         ConfigurationManager config;
         config.set("test", JsonValue("value"));
 
-        // This should fail gracefully
-        bool result = config.save("/root/cannot_write_here.json");
+        // Use a path that's guaranteed to fail on all platforms
+        // /dev/null is a special device file that can't be used as a directory
+        #ifdef _WIN32
+            bool result = config.save("C:\\Windows\\System32\\cannot_write_here.json");
+        #else
+            bool result = config.save("/dev/null/cannot_write_here.json");
+        #endif
         REQUIRE_FALSE(result);
     }
 
