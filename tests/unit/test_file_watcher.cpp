@@ -10,8 +10,14 @@
 #include <thread>
 #include <chrono>
 #include <atomic>
+#include <filesystem>
 
 using namespace mcf;
+
+// Helper function to get temp directory path (cross-platform)
+static std::string getTempFilePath(const std::string& filename) {
+    return (std::filesystem::temp_directory_path() / filename).string();
+}
 
 // =============================================================================
 // Basic FileWatcher Operations Tests
@@ -21,31 +27,31 @@ TEST_CASE("FileWatcher - Add and remove watch", "[filewatcher][core]") {
     FileWatcher watcher;
 
     SECTION("Add watch for file") {
-        bool result = watcher.addWatch("/tmp/test_file.txt", [](const std::string&, FileChangeType) {});
+        bool result = watcher.addWatch(getTempFilePath("test_file.txt"), [](const std::string&, FileChangeType) {});
         REQUIRE(result);
-        REQUIRE(watcher.isWatching("/tmp/test_file.txt"));
+        REQUIRE(watcher.isWatching(getTempFilePath("test_file.txt")));
     }
 
     SECTION("Remove watch for file") {
-        watcher.addWatch("/tmp/test_file.txt", [](const std::string&, FileChangeType) {});
-        watcher.removeWatch("/tmp/test_file.txt");
-        REQUIRE_FALSE(watcher.isWatching("/tmp/test_file.txt"));
+        watcher.addWatch(getTempFilePath("test_file.txt"), [](const std::string&, FileChangeType) {});
+        watcher.removeWatch(getTempFilePath("test_file.txt"));
+        REQUIRE_FALSE(watcher.isWatching(getTempFilePath("test_file.txt")));
     }
 
     SECTION("Remove non-existent watch is safe") {
-        watcher.removeWatch("/tmp/nonexistent.txt");
+        watcher.removeWatch(getTempFilePath("nonexistent.txt"));
         // Should not throw
     }
 
     SECTION("Add multiple watches") {
-        watcher.addWatch("/tmp/file1.txt", [](const std::string&, FileChangeType) {});
-        watcher.addWatch("/tmp/file2.txt", [](const std::string&, FileChangeType) {});
-        watcher.addWatch("/tmp/file3.txt", [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file1.txt"), [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file2.txt"), [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file3.txt"), [](const std::string&, FileChangeType) {});
 
         REQUIRE(watcher.getWatchCount() == 3);
-        REQUIRE(watcher.isWatching("/tmp/file1.txt"));
-        REQUIRE(watcher.isWatching("/tmp/file2.txt"));
-        REQUIRE(watcher.isWatching("/tmp/file3.txt"));
+        REQUIRE(watcher.isWatching(getTempFilePath("file1.txt")));
+        REQUIRE(watcher.isWatching(getTempFilePath("file2.txt")));
+        REQUIRE(watcher.isWatching(getTempFilePath("file3.txt")));
     }
 }
 
@@ -104,7 +110,7 @@ TEST_CASE("FileWatcher - Start and stop", "[filewatcher][core]") {
 TEST_CASE("FileWatcher - File modification detection", "[filewatcher][hot-reload]") {
     FileWatcher watcher(std::chrono::milliseconds(100));
 
-    std::string testFile = "/tmp/test_modify_catch2.txt";
+    std::string testFile = getTempFilePath("test_modify_catch2.txt");
 
     // Create initial file
     {
@@ -124,8 +130,8 @@ TEST_CASE("FileWatcher - File modification detection", "[filewatcher][hot-reload
 
     watcher.start();
 
-    // Wait for initial scan
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    // Wait for initial scan (longer on Windows)
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
     SECTION("Detect file modification") {
         // Modify file
@@ -134,8 +140,8 @@ TEST_CASE("FileWatcher - File modification detection", "[filewatcher][hot-reload
             file << "\nmodified content";
         }
 
-        // Wait for change detection
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        // Wait for change detection (longer on Windows)
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         REQUIRE(modified);
         REQUIRE(changeCount > 0);
@@ -146,11 +152,11 @@ TEST_CASE("FileWatcher - File modification detection", "[filewatcher][hot-reload
         for (int i = 0; i < 3; ++i) {
             std::ofstream file(testFile, std::ios::app);
             file << "\nmodification " << i;
-            std::this_thread::sleep_for(std::chrono::milliseconds(150));
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
 
-        // Wait for change detection
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        // Wait for change detection (longer on Windows)
+        std::this_thread::sleep_for(std::chrono::milliseconds(400));
 
         REQUIRE(modified);
         REQUIRE(changeCount >= 1);
@@ -165,7 +171,7 @@ TEST_CASE("FileWatcher - File modification detection", "[filewatcher][hot-reload
 TEST_CASE("FileWatcher - File creation detection", "[filewatcher][hot-reload]") {
     FileWatcher watcher(std::chrono::milliseconds(100));
 
-    std::string testFile = "/tmp/test_create_catch2.txt";
+    std::string testFile = getTempFilePath("test_create_catch2.txt");
 
     // Remove file if it exists
     std::remove(testFile.c_str());
@@ -180,8 +186,8 @@ TEST_CASE("FileWatcher - File creation detection", "[filewatcher][hot-reload]") 
 
     watcher.start();
 
-    // Wait for initial scan
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    // Wait for initial scan (longer on Windows)
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
     // Create file
     {
@@ -189,8 +195,8 @@ TEST_CASE("FileWatcher - File creation detection", "[filewatcher][hot-reload]") 
         file << "new file content";
     }
 
-    // Wait for change detection
-    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    // Wait for change detection (longer on Windows)
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     watcher.stop();
 
@@ -212,29 +218,29 @@ TEST_CASE("FileWatcher - Watch count", "[filewatcher][core]") {
     }
 
     SECTION("Watch count increases with additions") {
-        watcher.addWatch("/tmp/file1.txt", [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file1.txt"), [](const std::string&, FileChangeType) {});
         REQUIRE(watcher.getWatchCount() == 1);
 
-        watcher.addWatch("/tmp/file2.txt", [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file2.txt"), [](const std::string&, FileChangeType) {});
         REQUIRE(watcher.getWatchCount() == 2);
 
-        watcher.addWatch("/tmp/file3.txt", [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file3.txt"), [](const std::string&, FileChangeType) {});
         REQUIRE(watcher.getWatchCount() == 3);
     }
 
     SECTION("Watch count decreases with removals") {
-        watcher.addWatch("/tmp/file1.txt", [](const std::string&, FileChangeType) {});
-        watcher.addWatch("/tmp/file2.txt", [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file1.txt"), [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file2.txt"), [](const std::string&, FileChangeType) {});
         REQUIRE(watcher.getWatchCount() == 2);
 
-        watcher.removeWatch("/tmp/file1.txt");
+        watcher.removeWatch(getTempFilePath("file1.txt"));
         REQUIRE(watcher.getWatchCount() == 1);
     }
 
     SECTION("Clear all watches") {
-        watcher.addWatch("/tmp/file1.txt", [](const std::string&, FileChangeType) {});
-        watcher.addWatch("/tmp/file2.txt", [](const std::string&, FileChangeType) {});
-        watcher.addWatch("/tmp/file3.txt", [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file1.txt"), [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file2.txt"), [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("file3.txt"), [](const std::string&, FileChangeType) {});
 
         watcher.clearWatches();
         REQUIRE(watcher.getWatchCount() == 0);
@@ -284,7 +290,7 @@ TEST_CASE("FileWatcher - Thread safety", "[filewatcher][core]") {
         std::vector<std::thread> threads;
         for (int i = 0; i < 10; ++i) {
             threads.emplace_back([&watcher, i]() {
-                watcher.addWatch("/tmp/file" + std::to_string(i) + ".txt",
+                watcher.addWatch(getTempFilePath("file" + std::to_string(i) + ".txt"),
                                 [](const std::string&, FileChangeType) {});
             });
         }
@@ -297,7 +303,7 @@ TEST_CASE("FileWatcher - Thread safety", "[filewatcher][core]") {
     }
 
     SECTION("Start/stop from multiple threads") {
-        watcher.addWatch("/tmp/test.txt", [](const std::string&, FileChangeType) {});
+        watcher.addWatch(getTempFilePath("test.txt"), [](const std::string&, FileChangeType) {});
 
         std::vector<std::thread> threads;
         for (int i = 0; i < 5; ++i) {
@@ -326,26 +332,26 @@ TEST_CASE("FileWatcher - Performance", "[.benchmark][filewatcher]") {
     BENCHMARK("Add 100 watches") {
         FileWatcher bench_watcher;
         for (int i = 0; i < 100; ++i) {
-            bench_watcher.addWatch("/tmp/file" + std::to_string(i) + ".txt",
+            bench_watcher.addWatch(getTempFilePath("file" + std::to_string(i) + ".txt"),
                                    [](const std::string&, FileChangeType) {});
         }
     };
 
     // Setup watches for benchmark
     for (int i = 0; i < 100; ++i) {
-        watcher.addWatch("/tmp/file" + std::to_string(i) + ".txt",
+        watcher.addWatch(getTempFilePath("file" + std::to_string(i) + ".txt"),
                         [](const std::string&, FileChangeType) {});
     }
 
     BENCHMARK("Remove 100 watches") {
         for (int i = 0; i < 100; ++i) {
-            watcher.removeWatch("/tmp/file" + std::to_string(i) + ".txt");
+            watcher.removeWatch(getTempFilePath("file" + std::to_string(i) + ".txt"));
         }
     };
 
     BENCHMARK("Start and stop watcher") {
         FileWatcher bench_watcher;
-        bench_watcher.addWatch("/tmp/benchmark.txt", [](const std::string&, FileChangeType) {});
+        bench_watcher.addWatch(getTempFilePath("benchmark.txt"), [](const std::string&, FileChangeType) {});
         bench_watcher.start();
         bench_watcher.stop();
     };
