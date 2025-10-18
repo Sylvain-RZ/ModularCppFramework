@@ -72,14 +72,16 @@ TEST_CASE("Logger - All sink types", "[Logger][EdgeCases]") {
             file << "Old content that should be removed\n";
         }
 
-        auto logger = createLogger("file_truncate");
-        logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
-        logger->info("New content");
-        logger->flush();
+        {
+            auto logger = createLogger("file_truncate");
+            logger->addSink(std::make_shared<FileSink>(filepath, true, LogLevel::Debug));
+            logger->info("New content");
+            logger->flush();
 
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("Old content") == std::string::npos);
-        REQUIRE(content.find("New content") != std::string::npos);
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("Old content") == std::string::npos);
+            REQUIRE(content.find("New content") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -95,14 +97,16 @@ TEST_CASE("Logger - All sink types", "[Logger][EdgeCases]") {
             file << "Old content\n";
         }
 
-        auto logger = createLogger("file_append");
-        logger->addSink(std::make_shared<FileSink>(filepath, false, LogLevel::Debug));
-        logger->info("New content");
-        logger->flush();
+        {
+            auto logger = createLogger("file_append");
+            logger->addSink(std::make_shared<FileSink>(filepath, false, LogLevel::Debug));
+            logger->info("New content");
+            logger->flush();
 
-        std::string content = readFile(filepath);
-        REQUIRE(content.find("Old content") != std::string::npos);
-        REQUIRE(content.find("New content") != std::string::npos);
+            std::string content = readFile(filepath);
+            REQUIRE(content.find("Old content") != std::string::npos);
+            REQUIRE(content.find("New content") != std::string::npos);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove_all("test_logs");
@@ -117,18 +121,20 @@ TEST_CASE("Logger - All sink types", "[Logger][EdgeCases]") {
         std::filesystem::remove(filepath + ".1");
         std::filesystem::remove(filepath + ".2");
 
-        auto logger = createLogger("rotating");
-        logger->addSink(std::make_shared<RotatingFileSink>(filepath, 500, 2, LogLevel::Debug)); // 500 bytes max
+        {
+            auto logger = createLogger("rotating");
+            logger->addSink(std::make_shared<RotatingFileSink>(filepath, 500, 2, LogLevel::Debug)); // 500 bytes max
 
-        // Write enough to trigger rotation
-        for (int i = 0; i < 50; i++) {
-            logger->info("Message " + std::to_string(i) + " with some padding text");
-        }
-        logger->flush();
+            // Write enough to trigger rotation
+            for (int i = 0; i < 50; i++) {
+                logger->info("Message " + std::to_string(i) + " with some padding text");
+            }
+            logger->flush();
 
-        // Check that rotation occurred
-        bool hasBackup = std::filesystem::exists(filepath + ".1");
-        REQUIRE(hasBackup);
+            // Check that rotation occurred
+            bool hasBackup = std::filesystem::exists(filepath + ".1");
+            REQUIRE(hasBackup);
+        } // Logger destroyed here, files closed
 
         std::filesystem::remove(filepath);
         std::filesystem::remove(filepath + ".1");
