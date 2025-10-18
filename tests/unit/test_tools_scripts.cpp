@@ -87,10 +87,14 @@ public:
         std::string fullCommand = command + " > \"" + outFile + "\" 2> \"" + errFile + "\"";
         result.exitCode = system(fullCommand.c_str());
 
-        // Convert to actual exit code (system() returns status << 8)
-        if (WIFEXITED(result.exitCode)) {
-            result.exitCode = WEXITSTATUS(result.exitCode);
-        }
+        // Convert to actual exit code
+        // On Windows, system() returns the exit code directly
+        // On Unix, it returns a status that needs to be decoded
+        #ifndef _WIN32
+            if (WIFEXITED(result.exitCode)) {
+                result.exitCode = WEXITSTATUS(result.exitCode);
+            }
+        #endif
 
         // Read output files
         std::ifstream outStream(outFile);
