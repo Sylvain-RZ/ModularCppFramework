@@ -28,7 +28,7 @@ void writeConfigFile(const std::string& path, const std::string& content) {
 }
 
 TEST_CASE("ConfigurationManager - Basic file loading", "[integration][config][basic]") {
-    std::string testFile = "/tmp/mcf_test_config.json";
+    std::string testFile = (fs::temp_directory_path() / "mcf_test_config.json").string();
 
     SECTION("Load valid JSON configuration") {
         writeConfigFile(testFile, R"({
@@ -55,7 +55,7 @@ TEST_CASE("ConfigurationManager - Basic file loading", "[integration][config][ba
 
     SECTION("Load non-existent file returns false") {
         ConfigurationManager config;
-        REQUIRE_FALSE(config.load("/tmp/nonexistent_config_123456.json"));
+        REQUIRE_FALSE(config.load((fs::temp_directory_path() / "nonexistent_config_123456.json").string()));
     }
 
     SECTION("Load invalid JSON returns false") {
@@ -69,7 +69,7 @@ TEST_CASE("ConfigurationManager - Basic file loading", "[integration][config][ba
 }
 
 TEST_CASE("ConfigurationManager - Key watching callbacks", "[integration][config][watch]") {
-    std::string testFile = "/tmp/mcf_test_config_watch.json";
+    std::string testFile = (fs::temp_directory_path() / "mcf_test_config_watch.json").string();
 
     writeConfigFile(testFile, R"({
         "setting1": 100,
@@ -149,7 +149,7 @@ TEST_CASE("ConfigurationManager - Key watching callbacks", "[integration][config
 // Test case commented - requires startFileWatching() and stopFileWatching() not yet implemented
 /*
 TEST_CASE("ConfigurationManager - File watching and auto-reload", "[integration][config][hot-reload]") {
-    std::string testFile = "/tmp/mcf_test_config_hotreload.json";
+    std::string testFile = (fs::temp_directory_path() / "mcf_test_config_hotreload.json").string();
 
     writeConfigFile(testFile, R"({
         "runtime": {
@@ -266,7 +266,7 @@ TEST_CASE("ConfigurationManager - File watching and auto-reload", "[integration]
 */
 
 TEST_CASE("ConfigurationManager - Save and persistence", "[integration][config][save]") {
-    std::string testFile = "/tmp/mcf_test_config_save.json";
+    std::string testFile = (fs::temp_directory_path() / "mcf_test_config_save.json").string();
 
     SECTION("Save configuration to file") {
         ConfigurationManager config;
@@ -311,7 +311,7 @@ TEST_CASE("ConfigurationManager - Save and persistence", "[integration][config][
 }
 
 TEST_CASE("ConfigurationManager - Complex nested structures", "[integration][config][nested]") {
-    std::string testFile = "/tmp/mcf_test_config_nested.json";
+    std::string testFile = (fs::temp_directory_path() / "mcf_test_config_nested.json").string();
 
     writeConfigFile(testFile, R"({
         "database": {
@@ -389,7 +389,7 @@ TEST_CASE("ConfigurationManager - Default values", "[integration][config][defaul
 }
 
 TEST_CASE("ConfigurationManager - Application integration", "[integration][config][application]") {
-    std::string testFile = "/tmp/mcf_test_app_config.json";
+    std::string testFile = (fs::temp_directory_path() / "mcf_test_app_config.json").string();
 
     writeConfigFile(testFile, R"({
         "app": {
