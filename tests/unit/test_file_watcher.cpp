@@ -130,18 +130,22 @@ TEST_CASE("FileWatcher - File modification detection", "[filewatcher][hot-reload
 
     watcher.start();
 
-    // Wait for initial scan (longer on Windows)
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    // Wait for initial scan (at least 2x poll interval for Windows)
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     SECTION("Detect file modification") {
         // Modify file
         {
             std::ofstream file(testFile, std::ios::app);
             file << "\nmodified content";
+            file.flush(); // Ensure file is written to disk
         }
 
-        // Wait for change detection (longer on Windows)
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // Small delay to ensure file system sync (especially on Windows)
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // Wait for change detection (at least 2x poll interval + buffer)
+        std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
         REQUIRE(modified);
         REQUIRE(changeCount > 0);
@@ -150,13 +154,16 @@ TEST_CASE("FileWatcher - File modification detection", "[filewatcher][hot-reload
     SECTION("Multiple modifications detected") {
         // Modify file multiple times
         for (int i = 0; i < 3; ++i) {
-            std::ofstream file(testFile, std::ios::app);
-            file << "\nmodification " << i;
-            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            {
+                std::ofstream file(testFile, std::ios::app);
+                file << "\nmodification " << i;
+                file.flush(); // Ensure file is written
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(350));
         }
 
-        // Wait for change detection (longer on Windows)
-        std::this_thread::sleep_for(std::chrono::milliseconds(400));
+        // Wait for final change detection (at least 2x poll interval + buffer)
+        std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
         REQUIRE(modified);
         REQUIRE(changeCount >= 1);
@@ -186,17 +193,21 @@ TEST_CASE("FileWatcher - File creation detection", "[filewatcher][hot-reload]") 
 
     watcher.start();
 
-    // Wait for initial scan (longer on Windows)
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    // Wait for initial scan (at least 2x poll interval for Windows)
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     // Create file
     {
         std::ofstream file(testFile);
         file << "new file content";
+        file.flush(); // Ensure file is written to disk
     }
 
-    // Wait for change detection (longer on Windows)
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    // Small delay to ensure file system sync (especially on Windows)
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    // Wait for change detection (at least 2x poll interval + buffer)
+    std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
     watcher.stop();
 
