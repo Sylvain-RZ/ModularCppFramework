@@ -14,6 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2025-10-18
+
+### Fixed
+- **Windows Compatibility**: Fixed multiple file locking issues in logger edge cases tests
+- **ConfigurationManager**: Fixed `save()` method to properly handle all filesystem exceptions on Windows and macOS
+- **Test Suite**: Fixed Windows CI test failures in Application and ErrorRecovery tests
+- **Cross-platform Testing**: Improved read-only path handling in error recovery tests for better cross-platform compatibility
+
+### Improved
+- **Test Reliability**: Enhanced test suite stability on Windows platform
+- **Error Handling**: More robust filesystem error handling in ConfigurationManager
+- **CI/CD**: Enabled CI workflow on dev branch for continuous validation
+
+---
+
 ## [1.0.1] - 2025-10-18
 
 ### Added
