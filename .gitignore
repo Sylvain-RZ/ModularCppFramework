@@ -126,3 +126,9 @@ __pycache__/
 local_config.json
 .env
 .env.local
+
+# Generator Test Output (plugins generated during testing)
+plugins/TestPlugin/
+plugins/EventPlugin/
+plugins/RealtimePlugin/
+GENERATORS_README.txt
