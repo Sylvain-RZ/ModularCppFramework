@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 create-application.py - Cross-platform application generator for ModularCppFramework
 Python wrapper that works on Windows, Linux, and macOS
@@ -10,6 +11,14 @@ import argparse
 import subprocess
 import platform
 from pathlib import Path
+
+# Set UTF-8 encoding for Windows console
+if platform.system() == 'Windows':
+    import codecs
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
 
 
 def get_project_root():
@@ -91,6 +100,10 @@ def run_cmake_generator(args, project_root):
     temp_cmake = build_dir / 'generate_application.cmake'
     cmake_dir = project_root / 'cmake'
 
+    # Convert paths to POSIX format for CMake (forward slashes work on all platforms)
+    cmake_dir_posix = cmake_dir.as_posix()
+    output_dir_posix = Path(output_dir).as_posix()
+
     # Convert comma-separated modules to CMake list
     module_list = ''
     if args.modules:
@@ -124,10 +137,10 @@ def run_cmake_generator(args, project_root):
         config_line = '    list(APPEND APP_ARGS CONFIG)\n'
 
     cmake_script = f'''# Include application generator
-include("{cmake_dir}/MCFApplicationGenerator.cmake")
+include("{cmake_dir_posix}/MCFApplicationGenerator.cmake")
 
 # Generate application
-set(APP_ARGS NAME "{args.name}" VERSION "{args.version}" AUTHOR "{args.author}" DESCRIPTION "{args.description}" OUTPUT_DIR "{output_dir}")
+set(APP_ARGS NAME "{args.name}" VERSION "{args.version}" AUTHOR "{args.author}" DESCRIPTION "{args.description}" OUTPUT_DIR "{output_dir_posix}")
 
 {modules_line}
 {plugins_line}

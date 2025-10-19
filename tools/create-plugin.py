@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 create-plugin.py - Cross-platform plugin generator for ModularCppFramework
 Python wrapper that works on Windows, Linux, and macOS
@@ -10,6 +11,14 @@ import argparse
 import subprocess
 import platform
 from pathlib import Path
+
+# Set UTF-8 encoding for Windows console
+if platform.system() == 'Windows':
+    import codecs
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
 
 
 def get_project_root():
@@ -97,9 +106,15 @@ def run_cmake_generator(args, project_root):
     temp_cmake = build_dir / 'generate_plugin.cmake'
     cmake_dir = project_root / 'cmake'
 
+    # Convert paths to POSIX format for CMake (forward slashes work on all platforms)
+    cmake_dir_posix = cmake_dir.as_posix()
+
     output_dir_line = ''
     if args.output:
-        output_dir_line = f'    list(APPEND PLUGIN_ARGS OUTPUT_DIR "{args.output}/{args.name}")\n'
+        # Convert output path to POSIX format for CMake
+        output_path = Path(args.output)
+        output_path_posix = output_path.as_posix()
+        output_dir_line = f'    list(APPEND PLUGIN_ARGS OUTPUT_DIR "{output_path_posix}/{args.name}")\n'
 
     realtime_line = ''
     if args.realtime:
@@ -110,7 +125,7 @@ def run_cmake_generator(args, project_root):
         event_line = '    list(APPEND PLUGIN_ARGS EVENT_DRIVEN)\n'
 
     cmake_script = f'''# Include plugin generator
-include("{cmake_dir}/MCFPluginGenerator.cmake")
+include("{cmake_dir_posix}/MCFPluginGenerator.cmake")
 
 # Generate plugin
 set(PLUGIN_ARGS NAME "{args.name}" VERSION "{args.version}" AUTHOR "{args.author}" DESCRIPTION "{args.description}" PRIORITY {args.priority})

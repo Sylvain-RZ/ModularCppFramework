@@ -190,6 +190,31 @@ See [.github/workflows/ci.yml](../../.github/workflows/ci.yml) for details.
 
 ## Common Issues and Solutions
 
+### Issue: Exit code detection in tests (Windows)
+
+**Problem:** The `system()` function has platform-specific behavior:
+- **Windows:** Returns the exit code directly
+- **Unix/Linux/macOS:** Returns a wait status that must be decoded with `WIFEXITED()` and `WEXITSTATUS()`
+
+**Solution:** Use conditional compilation to handle both cases:
+
+```cpp
+int rawExitCode = system(command.c_str());
+
+#ifdef _WIN32
+    // On Windows, system() returns the exit code directly
+    int exitCode = rawExitCode;
+#else
+    // On Unix, system() returns a wait status that needs to be decoded
+    int exitCode = -1;
+    if (WIFEXITED(rawExitCode)) {
+        exitCode = WEXITSTATUS(rawExitCode);
+    }
+#endif
+```
+
+See [tests/unit/test_tools_scripts.cpp:94-105](../../tests/unit/test_tools_scripts.cpp#L94-L105) for the full implementation.
+
 ### Issue: Python script not found (Windows)
 
 **Solution:** Ensure Python is installed and in PATH:

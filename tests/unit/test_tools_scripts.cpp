@@ -24,12 +24,14 @@
 
 using namespace mcf;
 
-// Helper macros for exit status (must be defined before use)
-#ifndef WIFEXITED
-    #define WIFEXITED(status) (((status) & 0x7f) == 0)
-#endif
-#ifndef WEXITSTATUS
-    #define WEXITSTATUS(status) (((status) >> 8) & 0xff)
+// Helper macros for Unix exit status (not used on Windows)
+#ifndef _WIN32
+    #ifndef WIFEXITED
+        #define WIFEXITED(status) (((status) & 0x7f) == 0)
+    #endif
+    #ifndef WEXITSTATUS
+        #define WEXITSTATUS(status) (((status) >> 8) & 0xff)
+    #endif
 #endif
 
 /**
@@ -85,14 +87,20 @@ public:
 
         // Execute command with output redirection (quote paths for Windows compatibility)
         std::string fullCommand = command + " > \"" + outFile + "\" 2> \"" + errFile + "\"";
-        result.exitCode = system(fullCommand.c_str());
+        int rawExitCode = system(fullCommand.c_str());
 
         // Convert to actual exit code
-        // On Windows, system() returns the exit code directly
-        // On Unix, it returns a status that needs to be decoded
-        #ifndef _WIN32
-            if (WIFEXITED(result.exitCode)) {
-                result.exitCode = WEXITSTATUS(result.exitCode);
+        // IMPORTANT: Platform-specific behavior of system()
+        #ifdef _WIN32
+            // On Windows, system() returns the exit code directly
+            result.exitCode = rawExitCode;
+        #else
+            // On Unix, system() returns a wait status that needs to be decoded
+            if (WIFEXITED(rawExitCode)) {
+                result.exitCode = WEXITSTATUS(rawExitCode);
+            } else {
+                // Process was terminated by a signal or other abnormal condition
+                result.exitCode = -1;
             }
         #endif
 
