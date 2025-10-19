@@ -13,12 +13,21 @@ import platform
 from pathlib import Path
 
 # Set UTF-8 encoding for Windows console
+# This must be done before any print() calls
 if platform.system() == 'Windows':
-    import codecs
-    if sys.stdout.encoding != 'utf-8':
-        sys.stdout.reconfigure(encoding='utf-8')
-    if sys.stderr.encoding != 'utf-8':
-        sys.stderr.reconfigure(encoding='utf-8')
+    try:
+        import io
+        if hasattr(sys.stdout, 'reconfigure'):
+            # Python 3.7+
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+        elif hasattr(sys.stdout, 'buffer'):
+            # Fallback: wrap stdout/stderr
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    except Exception:
+        # If UTF-8 setup fails, continue with default encoding
+        pass
 
 
 def get_project_root():
