@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 create-plugin.py - Cross-platform plugin generator for ModularCppFramework
 Python wrapper that works on Windows, Linux, and macOS
@@ -11,23 +10,6 @@ import argparse
 import subprocess
 import platform
 from pathlib import Path
-
-# Set UTF-8 encoding for Windows console
-# This must be done before any print() calls
-if platform.system() == 'Windows':
-    try:
-        import io
-        if hasattr(sys.stdout, 'reconfigure'):
-            # Python 3.7+
-            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
-        elif hasattr(sys.stdout, 'buffer'):
-            # Fallback: wrap stdout/stderr
-            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
-    except Exception:
-        # If UTF-8 setup fails, continue with default encoding
-        pass
 
 
 def get_project_root():
@@ -159,7 +141,7 @@ mcf_generate_plugin(${{PLUGIN_ARGS}})
         temp_cmake.unlink()
 
         print()
-        print("✓ Plugin generated successfully!")
+        print("[SUCCESS] Plugin generated successfully!")
         print()
         print("Next steps:")
         print(f"  1. Add the following line to plugins/CMakeLists.txt:")

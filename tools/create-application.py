@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 create-application.py - Cross-platform application generator for ModularCppFramework
 Python wrapper that works on Windows, Linux, and macOS
@@ -11,23 +10,6 @@ import argparse
 import subprocess
 import platform
 from pathlib import Path
-
-# Set UTF-8 encoding for Windows console
-# This must be done before any print() calls
-if platform.system() == 'Windows':
-    try:
-        import io
-        if hasattr(sys.stdout, 'reconfigure'):
-            # Python 3.7+
-            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
-        elif hasattr(sys.stdout, 'buffer'):
-            # Fallback: wrap stdout/stderr
-            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
-    except Exception:
-        # If UTF-8 setup fails, continue with default encoding
-        pass
 
 
 def get_project_root():
@@ -173,7 +155,7 @@ mcf_generate_application(${{APP_ARGS}})
         temp_cmake.unlink()
 
         print()
-        print("✓ Application generated successfully!")
+        print("[SUCCESS] Application generated successfully!")
         print()
         print("Next steps:")
         print(f"  1. Navigate to the application directory:")
