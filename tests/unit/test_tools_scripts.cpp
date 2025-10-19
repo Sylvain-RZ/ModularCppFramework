@@ -86,7 +86,13 @@ public:
         std::string errFile = tempDir + "mcf_test_err_" + std::to_string(getpid()) + ".txt";
 
         // Execute command with output redirection (quote paths for Windows compatibility)
-        std::string fullCommand = command + " > \"" + outFile + "\" 2> \"" + errFile + "\"";
+        #ifdef _WIN32
+            // On Windows, use cmd /c to ensure proper shell execution
+            std::string fullCommand = "cmd /c \"" + command + " > \"" + outFile + "\" 2> \"" + errFile + "\"\"";
+        #else
+            // On Unix, standard redirection works fine
+            std::string fullCommand = command + " > \"" + outFile + "\" 2> \"" + errFile + "\"";
+        #endif
         int rawExitCode = system(fullCommand.c_str());
 
         // Convert to actual exit code
