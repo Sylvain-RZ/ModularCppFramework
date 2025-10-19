@@ -1,6 +1,6 @@
 {
   "name": "modular-cpp-framework",
-  "version-semver": "1.0.2",
+  "version-semver": "1.0.3",
   "description": "Modern C++17 framework with dynamic plugin system, hot-reload, and modular architecture",
   "homepage": "https://github.com/Sylvain-RZ/ModularCppFramework",
   "license": "MIT",

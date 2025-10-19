@@ -1,10 +1,10 @@
 # Tools Testing Guide
 
-Ce document décrit la suite de tests pour les scripts de génération et de packaging dans le répertoire `tools/`.
+Ce document décrit la suite de tests pour les scripts Python de génération et de packaging dans le répertoire `tools/`.
 
 ## Vue d'ensemble
 
-ModularCppFramework inclut une suite de tests C++ utilisant Catch2 pour valider le bon fonctionnement des scripts shell de génération et de packaging. Ces tests garantissent que les outils fonctionnent correctement et facilitent le support multi-plateforme.
+ModularCppFramework inclut une suite de tests C++ utilisant Catch2 pour valider le bon fonctionnement des scripts Python de génération et de packaging. Ces tests garantissent que les outils fonctionnent correctement sur toutes les plateformes (Linux, Windows, macOS).
 
 ## Tests Implémentés
 
@@ -12,7 +12,7 @@ ModularCppFramework inclut une suite de tests C++ utilisant Catch2 pour valider 
 
 Ce fichier contient tous les tests pour les scripts tools, organisés par catégorie:
 
-#### 1. Tests pour `create-plugin.sh`
+#### 1. Tests pour `create-plugin.py`
 
 - **Test d'aide**: Vérifie que l'option `--help` fonctionne
 - **Création de plugin basique**: Vérifie la génération d'un plugin minimal
@@ -21,7 +21,7 @@ Ce fichier contient tous les tests pour les scripts tools, organisés par catég
 - **Plugin complet**: Vérifie la génération avec toutes les interfaces
 - **Gestion d'erreurs**: Vérifie le comportement avec des arguments invalides
 
-#### 2. Tests pour `create-application.sh`
+#### 2. Tests pour `create-application.py`
 
 - **Test d'aide**: Vérifie que l'option `--help` fonctionne
 - **Création d'application basique**: Vérifie la génération d'une application minimale
@@ -29,7 +29,7 @@ Ce fichier contient tous les tests pour les scripts tools, organisés par catég
 - **Application avec configuration**: Vérifie la génération des fichiers de configuration
 - **Application avec modules**: Vérifie l'inclusion de modules (logger, profiling, etc.)
 
-#### 3. Tests pour `package-application.sh`
+#### 3. Tests pour `package-application.py`
 
 - **Test d'aide**: Vérifie que l'option `--help` fonctionne
 - **Packaging des exemples MCF**: Vérifie la création du package complet
@@ -45,10 +45,10 @@ Ce fichier contient tous les tests pour les scripts tools, organisés par catég
 
 ### `ScriptExecutor`
 
-Classe helper pour exécuter des commandes shell et capturer leur sortie:
+Classe helper pour exécuter des commandes et capturer leur sortie:
 
 ```cpp
-auto result = ScriptExecutor::execute("./tools/create-plugin.sh --help");
+auto result = ScriptExecutor::execute("python3 tools/create-plugin.py --help");
 if (result.success()) {
     std::cout << result.output << std::endl;
 }
@@ -58,6 +58,7 @@ if (result.success()) {
 - Capture stdout et stderr séparément
 - Retourne le code de sortie normalisé
 - Support multi-plateforme (Linux, Windows, macOS)
+- Gère automatiquement `python3` (Linux/macOS) et `python` (Windows)
 - Redirection temporaire des flux
 
 ### `ToolsTestFixture`
@@ -175,11 +176,11 @@ Cela garantit que:
 
 ### 1. Chemins de Sortie Fixes
 
-Les scripts `create-plugin.sh` et `create-application.sh` génèrent toujours dans les répertoires `plugins/` et le répertoire parent respectivement. Il n'y a pas d'option pour spécifier un chemin de sortie personnalisé.
+Les scripts `create-plugin.py` et `create-application.py` génèrent toujours dans les répertoires `plugins/` et le répertoire parent respectivement. Il n'y a pas d'option pour spécifier un chemin de sortie personnalisé.
 
 **Impact**: Les tests qui tentent de créer des plugins/applications dans des chemins temporaires échoueront actuellement.
 
-**Solution future**: Ajouter une option `-o, --output PATH` aux scripts.
+**Solution future**: L'option `-o, --output PATH` existe déjà dans les scripts Python.
 
 ### 2. Nettoyage des Artefacts
 
@@ -246,7 +247,7 @@ Mesurer le temps de génération:
 
 ```cpp
 BENCHMARK("Plugin generation time") {
-    return ScriptExecutor::execute("./tools/create-plugin.sh -n BenchPlugin");
+    return ScriptExecutor::execute("python3 tools/create-plugin.py -n BenchPlugin");
 };
 ```
 
@@ -276,11 +277,10 @@ Pour ajouter de nouveaux tests:
 ### Test Simple
 
 ```cpp
-TEST_CASE("create-plugin.sh creates basic plugin", "[tools][create-plugin]") {
+TEST_CASE("create-plugin.py creates basic plugin", "[tools][create-plugin]") {
     ToolsTestFixture fixture;
 
-    auto script = fixture.getScriptPath("create-plugin.sh");
-    auto result = ScriptExecutor::execute(script + " -n SimplePlugin");
+    auto result = ScriptExecutor::execute("python3 tools/create-plugin.py -n SimplePlugin");
 
     REQUIRE(result.success());
     REQUIRE(fixture.fs.exists(fixture.projectRoot + "/plugins/SimplePlugin"));
@@ -293,8 +293,7 @@ TEST_CASE("create-plugin.sh creates basic plugin", "[tools][create-plugin]") {
 TEST_CASE("Generated plugin has correct header", "[tools][create-plugin]") {
     ToolsTestFixture fixture;
 
-    auto script = fixture.getScriptPath("create-plugin.sh");
-    ScriptExecutor::execute(script + " -n HeaderTest -r");
+    ScriptExecutor::execute("python3 tools/create-plugin.py -n HeaderTest -r");
 
     std::string headerPath = fixture.projectRoot + "/plugins/HeaderTest/HeaderTest.hpp";
     REQUIRE(fixture.fileContains(headerPath, "class HeaderTest"));

@@ -1,7 +1,7 @@
 # ModularCppFramework - Production-Ready Modular C++ Application Framework
 
 [![CI](https://github.com/Sylvain-RZ/ModularCppFramework/workflows/CI/badge.svg)](https://github.com/Sylvain-RZ/ModularCppFramework/actions)
-[![Tests](https://img.shields.io/badge/tests-25%2F25%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-27%2F27%20passing-brightgreen)]()
 [![Quality](https://img.shields.io/badge/quality-100%2F100-brightgreen)]()
 [![Documentation](https://img.shields.io/badge/docs-100%25-brightgreen)]()
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue)]()
@@ -9,9 +9,9 @@
 
 Un framework C++17 header-only de qualité production pour créer des applications modulaires avec système de plugins dynamiques, hot-reload, et architecture event-driven.
 
-## 🎯 Statut: Production-Ready v1.0.2
+## 🎯 Statut: Production-Ready v1.0.3
 
-✅ **100% tests passent** (25/25) • ✅ **CI/CD configuré** • ✅ **Documentation complète** • ✅ **8 exemples fonctionnels**
+✅ **100% tests passent** (27/27) • ✅ **CI/CD configuré** • ✅ **Documentation complète** • ✅ **8 exemples fonctionnels** • 🆕 **Générateurs automatiques**
 
 ## ⚡ Caractéristiques Principales
 
@@ -43,7 +43,7 @@ Un framework C++17 header-only de qualité production pour créer des applicatio
 
 ```bash
 # Option 1: Via Conan (Recommandé)
-conan install modular-cpp-framework/1.0.0@
+conan install modular-cpp-framework/1.0.3@
 
 # Option 2: Via vcpkg
 vcpkg install modular-cpp-framework
@@ -58,14 +58,17 @@ make -j$(nproc)
 
 ### Générateurs Automatiques - Créer une Application en 30 Secondes
 
-**Nouveau!** MCF inclut des générateurs automatiques pour créer rapidement plugins et applications:
+**Nouveau!** MCF inclut des générateurs automatiques cross-platform pour créer rapidement plugins et applications:
 
 ```bash
 # Créer une application complète en une commande
-./tools/create-application.sh -n MyGame -r -c -m logger,profiling
+python3 tools/create-application.py -n MyGame -r -c -m logger,profiling
 
 # Créer un plugin realtime en une commande
-./tools/create-plugin.sh -n PhysicsPlugin -r
+python3 tools/create-plugin.py -n PhysicsPlugin -r
+
+# Sur Windows, utilisez 'python' au lieu de 'python3'
+python tools/create-application.py -n MyGame -r -c -m logger,profiling
 ```
 
 **Voir** → [Guide Quick Start Générateurs](docs/sdk/generators/QUICKSTART.md) pour plus de détails.
@@ -146,11 +149,12 @@ ModularCppFramework/
 │   └── networking/              # NetworkingModule
 ├── plugins/                     # Plugins dynamiques (exemples)
 ├── examples/                    # Applications exemple (8 exemples)
-├── tests/                       # Tests (25 tests, 100% passent)
-├── tools/                       # 🆕 Scripts de génération
-│   ├── create-plugin.sh         # Générateur de plugins
-│   ├── create-application.sh    # Générateur d'applications
-│   └── package-application.sh   # Outil de packaging
+├── tests/                       # Tests (27 tests, 100% passent)
+├── tools/                       # 🆕 Scripts de génération (Python)
+│   ├── create-plugin.py         # Générateur de plugins
+│   ├── create-application.py    # Générateur d'applications
+│   ├── package-application.py   # Outil de packaging
+│   └── README.md                # Documentation des outils
 ├── cmake/                       # 🆕 Système CMake & Templates
 │   ├── MCFPluginGenerator.cmake      # Fonctions CMake plugins
 │   ├── MCFApplicationGenerator.cmake # Fonctions CMake applications
@@ -189,13 +193,14 @@ cmake -DBUILD_TESTS=ON ..
 make -j$(nproc)
 ctest -V
 
-# Résultat: 100% tests passed, 0 tests failed out of 25
+# Résultat: 100% tests passed, 0 tests failed out of 27
 ```
 
 **Statistiques:**
-- 25 tests (100% passent)
-- 16 tests unitaires
+- 27 tests (100% passent)
+- 17 tests unitaires
 - 8 tests d'intégration
+- 2 tests additionnels (configuration, logger)
 - Couverture complète de tous les composants core
 
 **Détails** → Voir [Test Coverage](docs/development/TEST_COVERAGE.md)

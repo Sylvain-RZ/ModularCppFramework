@@ -29,10 +29,13 @@ Cette documentation est destinée aux **développeurs utilisant ModularCppFramew
 **Exemples rapides:**
 ```bash
 # Créer un plugin realtime
-./tools/create-plugin.sh -n PhysicsPlugin -r
+python3 tools/create-plugin.py -n PhysicsPlugin -r
 
 # Créer une application complète
-./tools/create-application.sh -n MyGame -r -c -m logger,profiling
+python3 tools/create-application.py -n MyGame -r -c -m logger,profiling
+
+# Sur Windows, utilisez 'python' au lieu de 'python3'
+python tools/create-plugin.py -n PhysicsPlugin -r
 ```
 
 ## Guides Techniques

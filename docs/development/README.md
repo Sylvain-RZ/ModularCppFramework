@@ -12,6 +12,7 @@ Cette documentation est destinée aux **mainteneurs et contributeurs du framewor
 ## Guides de Développement
 
 - **[BUILD.md](BUILD.md)** - Guide de build complet (compilation, options, debugging, CI/CD)
+- **[CROSS_PLATFORM.md](CROSS_PLATFORM.md)** - Support multiplateforme (Linux, Windows, macOS)
 - **[IMPLEMENTATION.md](IMPLEMENTATION.md)** - Détails techniques d'implémentation du framework
 - **[TEST_COVERAGE.md](TEST_COVERAGE.md)** - Stratégie de tests et couverture (25 tests)
 - **[TOOLS_TESTING.md](TOOLS_TESTING.md)** - Tests des générateurs et scripts (tools/, cmake/)
@@ -38,7 +39,7 @@ ModularCppFramework/
 │   ├── unit/              # Tests unitaires (16 tests)
 │   └── integration/       # Tests d'intégration (8 tests)
 ├── examples/               # Applications exemple (8 exemples)
-├── tools/                  # Scripts de génération (create-plugin.sh, create-application.sh, package-application.sh)
+├── tools/                  # Scripts de génération Python (create-plugin.py, create-application.py, package-application.py)
 ├── cmake/                  # Système CMake (générateurs, templates, packaging)
 ├── docs/
 │   ├── sdk/               # Documentation pour utilisateurs

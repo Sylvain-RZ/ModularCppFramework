@@ -6,15 +6,17 @@ Ce répertoire contient les fichiers CMake pour le packaging, la distribution et
 
 **Créer un nouveau plugin en 30 secondes:**
 ```bash
-./tools/create-plugin.sh -n MyPlugin -r
+python3 tools/create-plugin.py -n MyPlugin -r    # Linux/macOS
+python tools/create-plugin.py -n MyPlugin -r     # Windows
 ```
 
 **Créer une nouvelle application en 30 secondes:**
 ```bash
-./tools/create-application.sh -n MyApp -r -c -m logger
+python3 tools/create-application.py -n MyApp -r -c -m logger    # Linux/macOS
+python tools/create-application.py -n MyApp -r -c -m logger     # Windows
 ```
 
-Voir [QUICKSTART.md](../docs/sdk/generators/QUICKSTART.md) pour plus de détails.
+Voir [QUICKSTART.md](../docs/sdk/generators/QUICKSTART.md) et [tools/README.md](../tools/README.md) pour plus de détails.
 
 ## Fichiers
 
@@ -57,7 +59,7 @@ mcf_generate_plugin(
 
 **Script Helper** :
 ```bash
-./tools/create-plugin.sh -n AudioPlugin -v 1.0.0 -a "Audio Team" -r -e
+python3 tools/create-plugin.py -n AudioPlugin -v 1.0.0 -a "Audio Team" -r -e
 ```
 
 **Arguments** :
@@ -102,7 +104,7 @@ mcf_generate_application(
 
 **Script Helper** :
 ```bash
-./tools/create-application.sh -n MyGame -v 1.0.0 -r -c -m logger,profiling
+python3 tools/create-application.py -n MyGame -v 1.0.0 -r -c -m logger,profiling
 ```
 
 **Arguments** :
@@ -187,13 +189,13 @@ sudo make install
 
 ```bash
 # Plugin basique
-./tools/create-plugin.sh -n MyPlugin
+python3 tools/create-plugin.py -n MyPlugin
 
 # Plugin avec realtime updates
-./tools/create-plugin.sh -n PhysicsPlugin -r
+python3 tools/create-plugin.py -n PhysicsPlugin -r
 
 # Plugin complet avec toutes les options
-./tools/create-plugin.sh \
+python3 tools/create-plugin.py \
     -n NetworkPlugin \
     -v 2.0.0 \
     -a "Network Team" \

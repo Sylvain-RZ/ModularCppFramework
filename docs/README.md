@@ -43,6 +43,7 @@ Cette section contient tous les guides pour développer des applications avec MC
 Cette section contient les guides techniques pour maintenir et développer MCF:
 
 - [**BUILD.md**](development/BUILD.md) - Guide de build complet (compilation, options, debugging, CI/CD)
+- [**CROSS_PLATFORM.md**](development/CROSS_PLATFORM.md) - Support multiplateforme (Linux, Windows, macOS)
 - [**IMPLEMENTATION.md**](development/IMPLEMENTATION.md) - Détails techniques d'implémentation
 - [**TEST_COVERAGE.md**](development/TEST_COVERAGE.md) - Stratégie de tests et couverture
 - [**TOOLS_TESTING.md**](development/TOOLS_TESTING.md) - Tests des générateurs et scripts
@@ -108,6 +109,7 @@ docs/
 └── development/                # Pour mainteneurs
     ├── README.md
     ├── BUILD.md                # Guide de build
+    ├── CROSS_PLATFORM.md       # Support multiplateforme
     ├── IMPLEMENTATION.md
     ├── TEST_COVERAGE.md
     ├── TOOLS_TESTING.md        # Tests des outils

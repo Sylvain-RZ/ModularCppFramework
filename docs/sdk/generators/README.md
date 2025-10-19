@@ -23,46 +23,47 @@ Système complet de génération automatique de plugins et d'applications pour M
 ### Créer un Plugin
 
 ```bash
-# Depuis la racine du projet
-./tools/create-plugin.sh -n MyPlugin -r
+# Linux/macOS
+python3 tools/create-plugin.py -n MyPlugin -r
+
+# Windows
+python tools/create-plugin.py -n MyPlugin -r
 ```
 
 ### Créer une Application
 
 ```bash
-# Depuis la racine du projet
-./tools/create-application.sh -n MyApp -r -c -m logger
+# Linux/macOS
+python3 tools/create-application.py -n MyApp -r -c -m logger
+
+# Windows
+python tools/create-application.py -n MyApp -r -c -m logger
 ```
 
 ### Packager une Application
 
 ```bash
-# Depuis la racine du projet
-./tools/package-application.sh -t package-my_app --extract --test
-```
+# Linux/macOS
+python3 tools/package-application.py -t package-my_app --extract --test
 
-### Via Makefile
-
-```bash
-make -f cmake/Makefile plugin-realtime NAME=Physics
-make -f cmake/Makefile app-full NAME=MyGame
+# Windows
+python tools/package-application.py -t package-my_app --extract --test
 ```
 
 ## 📁 Organisation
 
 ```
 ModularCppFramework/
-├── tools/                              # Scripts de génération
-│   ├── create-plugin.sh                # Générateur de plugins
-│   ├── create-application.sh           # Générateur d'applications
-│   └── package-application.sh          # Outil de packaging
+├── tools/                              # Scripts Python cross-platform
+│   ├── create-plugin.py                # Générateur de plugins (Python 3.6+)
+│   ├── create-application.py           # Générateur d'applications (Python 3.6+)
+│   └── package-application.py          # Outil de packaging (Python 3.6+)
 ├── cmake/                              # Système CMake
-│   ├── MCFPluginGenerator.cmake        # Fonctions plugins
-│   ├── MCFApplicationGenerator.cmake   # Fonctions applications
-│   ├── MCFPackaging.cmake              # Fonctions packaging
-│   ├── templates/                      # Templates de génération
-│   └── Makefile                        # Raccourcis make
-└── docs/development/generators/        # Documentation (ce dossier)
+│   ├── MCFPluginGenerator.cmake        # Fonctions CMake plugins
+│   ├── MCFApplicationGenerator.cmake   # Fonctions CMake applications
+│   ├── MCFPackaging.cmake              # Fonctions CMake packaging
+│   └── templates/                      # Templates de génération
+└── docs/sdk/generators/                # Documentation (ce dossier)
     ├── README.md                       # Ce fichier
     ├── QUICKSTART.md                   # Démarrage rapide
     ├── PLUGIN_GENERATOR.md             # Guide plugins
@@ -75,21 +76,21 @@ ModularCppFramework/
 
 ### Plugins
 
-| Type | Description | Commande |
-|------|-------------|----------|
-| Basique | IPlugin seulement | `./tools/create-plugin.sh -n MyPlugin` |
-| Realtime | + IRealtimeUpdatable | `./tools/create-plugin.sh -n MyPlugin -r` |
-| Event-Driven | + IEventDriven | `./tools/create-plugin.sh -n MyPlugin -e` |
-| Full | + Realtime + Events | `./tools/create-plugin.sh -n MyPlugin -r -e` |
+| Type | Description | Commande (Linux/macOS) |
+|------|-------------|----------------------|
+| Basique | IPlugin seulement | `python3 tools/create-plugin.py -n MyPlugin` |
+| Realtime | + IRealtimeUpdatable | `python3 tools/create-plugin.py -n MyPlugin -r` |
+| Event-Driven | + IEventDriven | `python3 tools/create-plugin.py -n MyPlugin -e` |
+| Full | + Realtime + Events | `python3 tools/create-plugin.py -n MyPlugin -r -e` |
 
 ### Applications
 
-| Type | Description | Commande |
-|------|-------------|----------|
-| Basique | Structure minimale | `./tools/create-application.sh -n MyApp` |
-| Realtime | + Update loop | `./tools/create-application.sh -n MyApp -r` |
-| Event-Driven | + Events | `./tools/create-application.sh -n MyApp -e` |
-| Full | + All features | `./tools/create-application.sh -n MyApp -r -e -c -m logger` |
+| Type | Description | Commande (Linux/macOS) |
+|------|-------------|----------------------|
+| Basique | Structure minimale | `python3 tools/create-application.py -n MyApp` |
+| Realtime | + Update loop | `python3 tools/create-application.py -n MyApp -r` |
+| Event-Driven | + Events | `python3 tools/create-application.py -n MyApp -e` |
+| Full | + All features | `python3 tools/create-application.py -n MyApp -r -e -c -m logger` |
 
 ## 📖 Modules Disponibles
 
@@ -107,36 +108,48 @@ Usage: `-m logger,networking,profiling`
 ### Plugin de Physique
 
 ```bash
-./tools/create-plugin.sh \
+# Linux/macOS
+python3 tools/create-plugin.py \
     -n PhysicsEngine \
     -v 1.0.0 \
     -a "Physics Team" \
     -d "2D physics simulation" \
     -p 400 \
     -r
+
+# Windows
+python tools/create-plugin.py -n PhysicsEngine -v 1.0.0 -a "Physics Team" -d "2D physics simulation" -p 400 -r
 ```
 
 ### Jeu Complet
 
 ```bash
-./tools/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n SimpleGame \
     -v 1.0.0 \
     -a "Game Team" \
     -d "A simple 2D game" \
     -m logger,profiling,realtime \
     -r -c
+
+# Windows
+python tools/create-application.py -n SimpleGame -v 1.0.0 -a "Game Team" -d "A simple 2D game" -m logger,profiling,realtime -r -c
 ```
 
 ### Serveur Network
 
 ```bash
-./tools/create-application.sh \
+# Linux/macOS
+python3 tools/create-application.py \
     -n GameServer \
     -v 2.0.0 \
     -a "Server Team" \
     -m logger,networking \
     -e -c
+
+# Windows
+python tools/create-application.py -n GameServer -v 2.0.0 -a "Server Team" -m logger,networking -e -c
 ```
 
 ## 🎁 Packaging d'Applications
@@ -146,27 +159,33 @@ Une fois votre application développée, utilisez le script de packaging pour cr
 ### Utilisation Basique
 
 ```bash
-# Packager une application
-./tools/package-application.sh -t package-my_app
+# Linux/macOS
+python3 tools/package-application.py -t package-my_app
 
 # Packager tous les exemples MCF
-./tools/package-application.sh -t package-mcf-examples
+python3 tools/package-application.py -t package-mcf-examples
+
+# Windows
+python tools/package-application.py -t package-my_app
 ```
 
 ### Options Avancées
 
 ```bash
-# Package avec clean build
-./tools/package-application.sh -t package-my_app --clean
+# Linux/macOS - Package avec clean build
+python3 tools/package-application.py -t package-my_app --clean
 
 # Package, extraction et tests automatiques
-./tools/package-application.sh -t package-my_app --extract --test
+python3 tools/package-application.py -t package-my_app --extract --test
 
 # Package et copie vers un répertoire de distribution
-./tools/package-application.sh -t package-my_app -o /path/to/dist
+python3 tools/package-application.py -t package-my_app -o /path/to/dist
 
 # Package avec configuration spécifique
-./tools/package-application.sh -t package-my_app -c Debug -j 4
+python3 tools/package-application.py -t package-my_app -c Debug -j 4
+
+# Windows
+python tools/package-application.py -t package-my_app --clean
 ```
 
 ### Résultat
@@ -183,32 +202,37 @@ Exemple: `MyApp-1.0.0-Linux-x86_64.tar.gz`
 ## 🆘 Aide
 
 ```bash
-# Aide plugins
-./tools/create-plugin.sh --help
+# Linux/macOS
+python3 tools/create-plugin.py --help
+python3 tools/create-application.py --help
+python3 tools/package-application.py --help
 
-# Aide applications
-./tools/create-application.sh --help
-
-# Aide packaging
-./tools/package-application.sh --help
-
-# Aide Makefile
-make -f cmake/Makefile help
-make -f cmake/Makefile help-plugin
-make -f cmake/Makefile help-app
+# Windows
+python tools/create-plugin.py --help
+python tools/create-application.py --help
+python tools/package-application.py --help
 ```
 
 ## 📝 Workflow Complet
 
 1. **Créer une application:**
    ```bash
-   ./tools/create-application.sh -n MyGame -r -c -m logger,profiling
+   # Linux/macOS
+   python3 tools/create-application.py -n MyGame -r -c -m logger,profiling
+
+   # Windows
+   python tools/create-application.py -n MyGame -r -c -m logger,profiling
    ```
 
 2. **Créer des plugins:**
    ```bash
-   ./tools/create-plugin.sh -n PhysicsPlugin -r
-   ./tools/create-plugin.sh -n AudioPlugin -r
+   # Linux/macOS
+   python3 tools/create-plugin.py -n PhysicsPlugin -r
+   python3 tools/create-plugin.py -n AudioPlugin -r
+
+   # Windows
+   python tools/create-plugin.py -n PhysicsPlugin -r
+   python tools/create-plugin.py -n AudioPlugin -r
    ```
 
 3. **Compiler et exécuter:**
@@ -216,16 +240,21 @@ make -f cmake/Makefile help-app
    cd MyGame
    mkdir build && cd build
    cmake ..
-   make -j$(nproc)
+   make -j$(nproc)    # Linux/macOS
+   # ou
+   cmake --build . --config Release    # Windows
    ./bin/mygame
    ```
 
 4. **Packager pour distribution:**
    ```bash
-   # Depuis la racine de MyGame
-   ../tools/package-application.sh -t package-mygame --extract --test
+   # Linux/macOS - Depuis la racine de MyGame
+   python3 ../tools/package-application.py -t package-mygame --extract --test
 
-   # Résultat: MyGame-1.0.0-Linux-x86_64.tar.gz
+   # Windows
+   python ..\tools\package-application.py -t package-mygame --extract --test
+
+   # Résultat: MyGame-1.0.0-Linux-x86_64.tar.gz (Linux) ou MyGame-1.0.0-Windows-x86_64.zip (Windows)
    ```
 
 ## 🔗 Liens Utiles

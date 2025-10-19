@@ -45,11 +45,11 @@ public:
     explicit ServerClientConnection(socket_t clientSocket, const NetworkConfig& config);
     ~ServerClientConnection() override;
 
-    // Disable copy, allow move
+    // Disable copy and move (contains std::atomic which is not moveable)
     ServerClientConnection(const ServerClientConnection&) = delete;
     ServerClientConnection& operator=(const ServerClientConnection&) = delete;
-    ServerClientConnection(ServerClientConnection&&) noexcept = default;
-    ServerClientConnection& operator=(ServerClientConnection&&) noexcept = default;
+    ServerClientConnection(ServerClientConnection&&) noexcept = delete;
+    ServerClientConnection& operator=(ServerClientConnection&&) noexcept = delete;
 
     // INetworkConnection interface
     bool connect(const std::string& address, uint16_t port) override { return false; } // Not used for server clients
@@ -121,11 +121,11 @@ public:
     explicit TcpServer(const NetworkConfig& config = NetworkConfig());
     ~TcpServer();
 
-    // Disable copy, allow move
+    // Disable copy and move (contains std::atomic which is not moveable)
     TcpServer(const TcpServer&) = delete;
     TcpServer& operator=(const TcpServer&) = delete;
-    TcpServer(TcpServer&&) noexcept = default;
-    TcpServer& operator=(TcpServer&&) noexcept = default;
+    TcpServer(TcpServer&&) noexcept = delete;
+    TcpServer& operator=(TcpServer&&) noexcept = delete;
 
     // Server lifecycle
     bool start();
